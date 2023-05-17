@@ -1,5 +1,6 @@
 package server.api.iterview.domain.member;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,23 +9,23 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity
-@Table(name="authority")
 @Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor @NoArgsConstructor @Builder
 public class Authority {
+
     @Id
-    @Column(name="authority_name", length=50)
-    @Enumerated(EnumType.STRING)
-    private MemberAuth authorityName;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
+    private Long id;
 
-    public String getAuthorityName(){
-        return this.authorityName.toString();
-    }
+    private String name;
 
-    public MemberAuth getAuthority(){
-        return this.authorityName;
+    @JoinColumn(name = "member")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Member member;
+
+    public void setMember(Member member) {
+        this.member = member;
     }
 }
-

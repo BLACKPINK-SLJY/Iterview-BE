@@ -1,7 +1,7 @@
 package server.api.iterview.repository;
 
 import org.springframework.stereotype.Repository;
-import server.api.iterview.domain.Foo;
+import server.api.iterview.domain.foo.Foo;
 
 
 import java.util.Optional;

@@ -1,4 +1,5 @@
-package server.api.iterview.dto;
+package server.api.iterview.dto.member;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,9 +8,9 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class FooDto {
-    private String name;
-    private String title;
+@AllArgsConstructor
+public class MemberInfoDto {
+    private Long id;
+    private String account;
 }

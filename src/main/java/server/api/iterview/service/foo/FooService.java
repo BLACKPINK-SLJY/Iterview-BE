@@ -1,11 +1,11 @@
-package server.api.iterview.service;
+package server.api.iterview.service.foo;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import server.api.iterview.domain.Foo;
-import server.api.iterview.dto.FooDto;
+import server.api.iterview.domain.foo.Foo;
+import server.api.iterview.dto.foo.FooDto;
 import server.api.iterview.repository.FooRepository;
 import server.api.iterview.response.BizException;
 import server.api.iterview.response.foo.FooResponseType;

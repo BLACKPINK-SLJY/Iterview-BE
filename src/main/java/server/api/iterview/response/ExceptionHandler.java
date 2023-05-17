@@ -11,6 +11,7 @@ public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(BizException.class)
     public ResponseEntity<ResponseMessage> bizException(BizException e){
+        log.error("[{}] - {}", e.getStackTrace()[0], e.getMessage());
         return new ResponseEntity<>(ResponseMessage.create(e.getBaseExceptionType()), e.getBaseExceptionType().getHttpStatus());
     }
 
