@@ -19,6 +19,7 @@ public enum MemberResponseType implements BaseResponseType {
     WRONG_PASSWORD(40107,"비밀번호를 잘못 입력하였습니다.", HttpStatus.UNAUTHORIZED),
     SESSION_EXPIRED(40108,"세션이 만료되었습니다.", HttpStatus.UNAUTHORIZED),
     SIGNUP_FAILED(40109, "회원가입에 실패하였습니다", HttpStatus.INTERNAL_SERVER_ERROR),
+    WITHDRAWAL_FAILED(40110, "회원탈퇴 실패", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // SUCCESS
     SIGNUP_SUCCESS(20100, "회원가입 성공", HttpStatus.NO_CONTENT),

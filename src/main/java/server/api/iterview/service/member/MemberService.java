@@ -166,4 +166,16 @@ public class MemberService {
             return jwtProvider.getAccount(token);
         }
     }
+
+    @Transactional
+    public void withdraw(String account) {
+        Member member = memberRepository.findByAccount(account)
+                .orElseThrow(() -> new BizException(MemberResponseType.NOT_FOUND_USER));
+
+        try {
+            memberRepository.delete(member);
+        }catch (Exception e){
+            throw new BizException(MemberResponseType.WITHDRAWAL_FAILED);
+        }
+    }
 }

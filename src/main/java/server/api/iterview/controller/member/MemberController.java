@@ -80,6 +80,20 @@ public class MemberController {
         return new ResponseEntity<>(ResponseMessage.create(JwtResponseType.TOKEN_REISSUED, tokenDto), JwtResponseType.TOKEN_REISSUED.getHttpStatus());
     }
 
+    @ApiOperation(value = "회원 탈퇴", notes = "회원 탈퇴")
+    @ApiResponses({
+            @ApiResponse(code = 20104, message = "회원탈퇴 성공 (204)"),
+            @ApiResponse(code = 40101, message = "사용자를 찾을 수 없습니다. (404)"),
+            @ApiResponse(code = 40110, message = "회원탈퇴 실패 (500)"),
+    })
+    @GetMapping("/member/withdraw")
+    public ResponseEntity<ResponseMessage> withdraw(@RequestHeader("Authorization") String token){
+        String account = memberService.getAccountByToken(token);
+        memberService.withdraw(account);
+
+        return new ResponseEntity<>(ResponseMessage.create(MemberResponseType.WITHDRAWAL_SUCCESS), MemberResponseType.WITHDRAWAL_SUCCESS.getHttpStatus());
+    }
+
 
 //    @GetMapping("/user/get")
 //    public ResponseEntity<SignResponse> getUser(@RequestHeader("Authorization") String token, @RequestParam String account) throws Exception {
