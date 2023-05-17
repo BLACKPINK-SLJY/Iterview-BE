@@ -24,6 +24,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'io.springfox:springfox-boot-starter:3.0.0'
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.420'
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+	implementation 'com.amazonaws:aws-java-sdk-transcribe:1.12.334'
+	implementation 'software.amazon.awssdk:kinesis'
+	implementation platform('software.amazon.awssdk:bom:2.15.0')
+	implementation group: 'com.amazonaws', name: 'aws-java-sdk-bom', version: '1.12.334', ext: 'pom'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2:1.4.199'
