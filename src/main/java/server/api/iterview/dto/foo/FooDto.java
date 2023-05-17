@@ -1,14 +1,15 @@
-package server.api.iterview.domain;
+package server.api.iterview.dto.foo;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 @Getter
-@NoArgsConstructor
+@Builder
 @AllArgsConstructor
-public class Foo {
+@NoArgsConstructor
+public class FooDto {
     private String name;
     private String title;
 }

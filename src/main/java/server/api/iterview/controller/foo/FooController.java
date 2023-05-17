@@ -1,4 +1,4 @@
-package server.api.iterview.controller;
+package server.api.iterview.controller.foo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import server.api.iterview.dto.FooDto;
+import server.api.iterview.dto.foo.FooDto;
 import server.api.iterview.response.BizException;
 import server.api.iterview.response.ResponseMessage;
 import server.api.iterview.response.foo.FooResponseType;
-import server.api.iterview.service.FooService;
+import server.api.iterview.service.foo.FooService;
 
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.*;

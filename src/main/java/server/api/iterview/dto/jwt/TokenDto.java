@@ -1,16 +1,10 @@
 package server.api.iterview.dto.jwt;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter
+@Builder @AllArgsConstructor @NoArgsConstructor
 public class TokenDto {
-    private String grantType;
-    private String accessToken;
-    private String refreshToken;
+    private String access_token;
+    private String refresh_token;
 }
