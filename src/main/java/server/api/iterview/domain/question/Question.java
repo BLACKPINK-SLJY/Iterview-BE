@@ -1,5 +1,7 @@
 package server.api.iterview.domain.question;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import server.api.iterview.domain.folder.Folder;
@@ -15,6 +17,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Question {
     @Id @GeneratedValue(strategy = IDENTITY)
     @Column(name = "QUESTION_ID")
@@ -31,7 +35,7 @@ public class Question {
 
     private String content;
 
-    private String keyword;
+    private String keywords;
 
     @Enumerated(EnumType.STRING)
     private Category category;

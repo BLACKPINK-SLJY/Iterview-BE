@@ -1,5 +1,7 @@
 package server.api.iterview.domain.question;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +15,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Tag {
     @Id @GeneratedValue(strategy = IDENTITY)
     @Column(name = "TAG_ID")

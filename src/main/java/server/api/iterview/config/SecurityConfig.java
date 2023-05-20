@@ -60,7 +60,7 @@ public class SecurityConfig {
                 .and()
                 // 조건별로 요청 허용/제한 설정
                 .authorizeRequests()
-                .antMatchers("/signup", "/login", "/refresh").permitAll()
+                .antMatchers("/signup", "/login", "/refresh", "/question").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/member/**").hasRole("USER")
                 .anyRequest().denyAll()
