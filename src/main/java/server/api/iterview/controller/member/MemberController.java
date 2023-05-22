@@ -25,8 +25,8 @@ public class MemberController {
 
     @ApiOperation(value = "회원가입", notes = "회원가입")
     @ApiResponses({
-            @ApiResponse(code = 20100, message = "회원가입 성공 (204)"),
-            @ApiResponse(code = 40106, message = "이미 사용중인 닉네임입니다. (204)"),
+            @ApiResponse(code = 20100, message = "회원가입 성공 (200)"),
+            @ApiResponse(code = 40106, message = "이미 사용중인 닉네임입니다. (200)"),
             @ApiResponse(code = 40109, message = "회원가입에 실패하였습니다 (500)")
     })
     @PostMapping("/signup")
@@ -42,8 +42,8 @@ public class MemberController {
 
     @ApiOperation(value = "로그인", notes = "로그인")
     @ApiResponses({
-            @ApiResponse(code = 20101, message = "로그인 성공 (204)"),
-            @ApiResponse(code = 40101, message = "사용자를 찾을 수 없습니다. (404)"),
+            @ApiResponse(code = 20101, message = "로그인 성공 (200)"),
+            @ApiResponse(code = 40101, message = "사용자를 찾을 수 없습니다. (400)"),
     })
     @PostMapping("/login")
     public ResponseEntity<ResponseMessage> login(@RequestBody SignRequest request) {
@@ -82,7 +82,7 @@ public class MemberController {
 
     @ApiOperation(value = "회원 탈퇴", notes = "회원 탈퇴")
     @ApiResponses({
-            @ApiResponse(code = 20104, message = "회원탈퇴 성공 (204)"),
+            @ApiResponse(code = 20104, message = "회원탈퇴 성공 (200)"),
             @ApiResponse(code = 40101, message = "사용자를 찾을 수 없습니다. (404)"),
             @ApiResponse(code = 40110, message = "회원탈퇴 실패 (500)"),
     })
