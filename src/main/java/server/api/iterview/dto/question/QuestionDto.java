@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 import server.api.iterview.domain.question.Question;
 import server.api.iterview.domain.question.Tag;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.List;
 
 @Getter
 @Builder
@@ -19,19 +19,30 @@ public class QuestionDto {
     private Long id;
     private String content;
     private String category;
-    private String keywords;
-    private String tags;
+    private List<KeywordDto> keywords;
+    private List<TagDto> tags;
     private Integer level;
 
     public static QuestionDto of(Question question){
-        Optional<String> tagString =  question.getTags().stream().map(Tag::getName).reduce((x, y) -> x + ", " + y);
+//        Optional<String> tagString =  question.getTags().stream().map(Tag::getName).reduce((x, y) -> x + ", " + y);
+
+        Object[] keywordStringList = Arrays.stream(question.getKeywords().split(",")).map(String::trim).toArray();
+        List<KeywordDto> keywordDtos = new ArrayList<>();
+        for(Object keywordString : keywordStringList){
+            keywordDtos.add(KeywordDto.of((String)keywordString));
+        }
+
+        List<TagDto> tagDtos = new ArrayList<>();
+        for (Tag tag : question.getTags()){
+            tagDtos.add(TagDto.of(tag));
+        }
 
         return QuestionDto.builder()
                 .id(question.getId())
                 .content(question.getContent())
                 .category(question.getCategory().name())
-                .keywords(question.getKeywords())
-                .tags(tagString.orElse(null))
+                .keywords(keywordDtos)
+                .tags(tagDtos)
                 .level(question.getLevel())
                 .build();
     }
