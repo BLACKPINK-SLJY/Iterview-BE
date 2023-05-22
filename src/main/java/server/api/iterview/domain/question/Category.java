@@ -8,8 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum Category {
     IOS("IOS"),
     AOS("AOS"),
-    FRONTEND("FRONTEND"),
-    BACKEND("BACKEND"),
+    FE("FE"),
+    BE("BE"),
     ;
 
     private final String category;
