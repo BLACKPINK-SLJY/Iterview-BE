@@ -1,9 +1,7 @@
 package server.api.iterview.dto.question;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import server.api.iterview.domain.bookmark.BookmarkStatus;
 import server.api.iterview.domain.question.Question;
 import server.api.iterview.domain.question.Tag;
 
@@ -12,16 +10,18 @@ import java.util.Arrays;
 import java.util.List;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuestionDto {
-    private Long id;
+    private Long questionId;
     private String content;
     private String category;
     private List<String> keywords;
     private List<String> tags;
     private Integer level;
+    private BookmarkStatus bookmarked;
 
     public static QuestionDto of(Question question){
 //        Optional<String> tagString =  question.getTags().stream().map(Tag::getName).reduce((x, y) -> x + ", " + y);
@@ -37,12 +37,13 @@ public class QuestionDto {
         }
 
         return QuestionDto.builder()
-                .id(question.getId())
+                .questionId(question.getId())
                 .content(question.getContent())
                 .category(question.getCategory().name())
                 .keywords(keywordStrings)
                 .tags(tagStrings)
                 .level(question.getLevel())
+                .bookmarked(null)
                 .build();
     }
 }

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import server.api.iterview.domain.bookmark.Bookmark;
 import server.api.iterview.domain.folder.Folder;
 
 import javax.persistence.*;
@@ -41,4 +42,8 @@ public class Question {
     private Category category;
 
     private Integer level;
+
+    @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Bookmark> bookmarks;
+
 }

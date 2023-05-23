@@ -5,11 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import server.api.iterview.domain.bookmark.Bookmark;
+import server.api.iterview.domain.member.Member;
 import server.api.iterview.domain.question.Category;
 import server.api.iterview.domain.question.Question;
 import server.api.iterview.domain.question.Tag;
 import server.api.iterview.dto.question.QuestionDto;
-import server.api.iterview.dto.question.QuestionListDto;
+import server.api.iterview.repository.BookmarkRepository;
 import server.api.iterview.repository.QuestionRepository;
 import server.api.iterview.repository.TagRepository;
 import server.api.iterview.response.BizException;
@@ -26,6 +28,7 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
     private final TagRepository tagRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     @Transactional
     public QuestionDto insertTerm(String content, String categoryString, String keywords, String tags, Integer level) {
@@ -78,13 +81,44 @@ public class QuestionService {
         }
     }
 
-    public QuestionListDto getAllQuestion() {
+    @Transactional
+    public List<QuestionDto> getAllQuestion(Member member) {
+        List<Question> questions = questionRepository.findAll();
 
-        return QuestionListDto.builder().build();
+        return getQuestionDtosFromQuestions(questions, member);
     }
 
-    public QuestionListDto getQuestionList(String category) {
+    @Transactional
+    public List<QuestionDto> getQuestionsByCategory(String categoryString, Member member) {
+        Category category;
+        try{
+            category = Category.valueOf(categoryString.toUpperCase());
+        }catch (IllegalArgumentException e){
+            throw new BizException(QuestionResponseType.INVALID_CATEGORY);
+        }
 
-        return QuestionListDto.builder().build();
+        List<Question> questions = questionRepository.findByCategory(category);
+
+        if(questions.isEmpty()){
+            return new ArrayList<>();
+        }
+
+        return getQuestionDtosFromQuestions(questions, member);
+    }
+
+    @Transactional
+    public List<QuestionDto> getQuestionDtosFromQuestions(List<Question> questions, Member member){
+        List<QuestionDto> questionDtos = new ArrayList<>();
+
+        for(Question question: questions){
+            QuestionDto questionDto = QuestionDto.of(question);
+            Bookmark bookmark = bookmarkRepository.findByMemberAndQuestion(member, question)
+                    .orElse(new Bookmark());
+
+            questionDto.setBookmarked(bookmark.getStatus());
+            questionDtos.add(questionDto);
+        }
+
+        return questionDtos;
     }
 }
