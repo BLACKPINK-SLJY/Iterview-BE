@@ -26,7 +26,7 @@ public class Folder {
 
     @ManyToMany
     @JoinTable(name = "FOLDER_QUESTION",
-            joinColumns = @JoinColumn(name = "FORLDER_ID"),
+            joinColumns = @JoinColumn(name = "FOLDER_ID"),
             inverseJoinColumns = @JoinColumn(name = "QUESTION_ID"))
     private List<Question> questions = new ArrayList<>();
 
