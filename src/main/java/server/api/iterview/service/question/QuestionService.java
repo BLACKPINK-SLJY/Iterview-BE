@@ -9,6 +9,7 @@ import server.api.iterview.domain.question.Category;
 import server.api.iterview.domain.question.Question;
 import server.api.iterview.domain.question.Tag;
 import server.api.iterview.dto.question.QuestionDto;
+import server.api.iterview.dto.question.QuestionListDto;
 import server.api.iterview.repository.QuestionRepository;
 import server.api.iterview.repository.TagRepository;
 import server.api.iterview.response.BizException;
@@ -75,5 +76,15 @@ public class QuestionService {
         }catch (EmptyResultDataAccessException e){
             throw new BizException(QuestionResponseType.NOT_EXIST);
         }
+    }
+
+    public QuestionListDto getAllQuestion() {
+
+        return QuestionListDto.builder().build();
+    }
+
+    public QuestionListDto getQuestionList(String category) {
+
+        return QuestionListDto.builder().build();
     }
 }
