@@ -23,5 +23,5 @@ public class Bookmark {
     private Question question;
 
     @Enumerated(EnumType.STRING)
-    private BookmarkStatus status;
+    private BookmarkStatus status = BookmarkStatus.N;
 }

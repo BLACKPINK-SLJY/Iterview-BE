@@ -62,7 +62,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/signup", "/login", "/refresh", "/question").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/member/**").hasRole("USER")
+                .antMatchers("/member/**", "/question/**").hasRole("USER")
                 .anyRequest().denyAll()
                 .and()
                 // JWT 인증 필터 적용
