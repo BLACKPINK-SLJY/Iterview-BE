@@ -9,11 +9,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import server.api.iterview.domain.member.Member;
 import server.api.iterview.dto.question.QuestionDto;
-import server.api.iterview.dto.question.QuestionListDto;
 import server.api.iterview.response.ResponseMessage;
 import server.api.iterview.response.question.QuestionResponseType;
+import server.api.iterview.service.member.MemberService;
 import server.api.iterview.service.question.QuestionService;
+
+import java.util.List;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.*;
 
@@ -23,6 +26,7 @@ import static io.swagger.v3.oas.annotations.enums.ParameterIn.*;
 @Slf4j
 public class QuestionController {
     private final QuestionService questionService;
+    private final MemberService memberService;
     
     @ApiOperation(value = "질문 저장", notes = "질문 저장")
     @ApiResponses({
@@ -54,10 +58,19 @@ public class QuestionController {
         return new ResponseEntity<>(ResponseMessage.create(QuestionResponseType.DELETE_SUCCESS), QuestionResponseType.DELETE_SUCCESS.getHttpStatus());
     }
 
+    @ApiOperation(value = "질문 리스트", notes = "쿼리 없을 경우 전체질문 응답,\n  있을 경우 ios/aos/fe/be")
+    @ApiResponses({
+            @ApiResponse(code = 20202, message = "질문 리스트 추출 성공 (200)"),
+            @ApiResponse(code = 40200, message = "카테고리 쿼리가 유효하지 않음 (400)"),
+    })
     @GetMapping("/question/list")
-    public ResponseEntity<ResponseMessage<QuestionListDto>> getQuestionList(@RequestParam(required = false) String category){
-        QuestionListDto questionListDto = (category == null) ? questionService.getAllQuestion() : questionService.getQuestionList(category);
+    public ResponseEntity<ResponseMessage<List<QuestionDto>>> getQuestionList(
+            @RequestHeader("Authorization") String token,
+            @Parameter(name = "category", description = "X or ios/aos/fe/be", in = QUERY) @RequestParam(required = false) String category
+    ){
+        Member member = memberService.getMemberByToken(token);
+        List<QuestionDto> questionDtos = (category == null) ? questionService.getAllQuestion(member) : questionService.getQuestionsByCategory(category, member);
 
-        return new ResponseEntity<>(ResponseMessage.create(QuestionResponseType.LIST_GET_SUCCESS, questionListDto), QuestionResponseType.LIST_GET_SUCCESS.getHttpStatus());
+        return new ResponseEntity<>(ResponseMessage.create(QuestionResponseType.LIST_GET_SUCCESS, questionDtos), QuestionResponseType.LIST_GET_SUCCESS.getHttpStatus());
     }
 }

@@ -168,6 +168,11 @@ public class MemberService {
     }
 
     @Transactional
+    public Member getMemberByToken(String token){
+        return this.getMember(this.getAccountByToken(token));
+    }
+
+    @Transactional
     public void withdraw(String account) {
         Member member = memberRepository.findByAccount(account)
                 .orElseThrow(() -> new BizException(MemberResponseType.NOT_FOUND_USER));
