@@ -8,11 +8,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import server.api.iterview.dto.question.QuestionDto;
+import server.api.iterview.dto.question.QuestionListDto;
 import server.api.iterview.response.ResponseMessage;
 import server.api.iterview.response.question.QuestionResponseType;
 import server.api.iterview.service.question.QuestionService;
@@ -54,5 +52,12 @@ public class QuestionController {
         questionService.deleteQuestion(id);
 
         return new ResponseEntity<>(ResponseMessage.create(QuestionResponseType.DELETE_SUCCESS), QuestionResponseType.DELETE_SUCCESS.getHttpStatus());
+    }
+
+    @GetMapping("/question/list")
+    public ResponseEntity<ResponseMessage<QuestionListDto>> getQuestionList(@RequestParam(required = false) String category){
+        QuestionListDto questionListDto = (category == null) ? questionService.getAllQuestion() : questionService.getQuestionList(category);
+
+        return new ResponseEntity<>(ResponseMessage.create(QuestionResponseType.LIST_GET_SUCCESS, questionListDto), QuestionResponseType.LIST_GET_SUCCESS.getHttpStatus());
     }
 }
