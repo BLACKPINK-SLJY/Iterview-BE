@@ -14,7 +14,9 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    environment: production
+    env :
+      working-directory: ./
+      APPLICATION: ${{ secrets.APPLICATION }}
 
     steps:
     # (1) 기본 체크아웃
@@ -27,6 +29,20 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '11'
+              
+              
+    - uses: actions/checkout@v3
+    - run: touch ./Iterview-BE/src/main/resources/application.yml
+    - run: echo "${{env.APPLICATION}}" > ./Iterview-BE/src/main/resources/application.yml
+    - uses: actions/upload-artifact@v3
+      with:
+        name: application.yml
+        path: ./Iterview-BE/src/main/resources/application.yml
+        
+        
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+      working-directory: ${{ env.working-directory }}
 
     # (3) Gradle build (Test 제외)
     - name: Build with Gradle
