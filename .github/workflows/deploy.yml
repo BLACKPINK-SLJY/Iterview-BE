@@ -73,10 +73,13 @@ jobs:
         key: ${{ secrets.KEY }}
         envs: GITHUB_SHA
         script: |
-          sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           sudo docker stop $(sudo docker ps -a -q)
           sudo docker rm $(sudo docker ps -a -q)
+          sudo docker rmi $(sudo docker images -q)
           sudo docker pull ${{ secrets.DOCKER_HUB_REPO }}:${GITHUB_SHA::7}
+          sudo docker tag ${{ secrets.DOCKER_HUB_REPO }}:${GITHUB_SHA::7} ${{ secrets.PROJECT_NAME }}
+          sudo docker stop ${{ secrets.PROJECT_NAME }}
+          sudo docker rm ${{ secrets.PROJECT_NAME }}
           sudo docker run -d -p 8080:8080 --name ${{ secrets.PROJECT_NAME }} ${{ secrets.PROJECT_NAME }}
 
 #    - name: Make zip file
