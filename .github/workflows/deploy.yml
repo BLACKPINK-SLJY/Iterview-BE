@@ -32,12 +32,12 @@ jobs:
               
               
     - uses: actions/checkout@v3
-    - run: touch /home/ec2-user/Iterview-BE/src/main/resources/application.yml
-    - run: echo "${{env.APPLICATION}}" > /home/ec2-user/Iterview-BE/src/main/resources/application.yml
+    - run: touch ./src/main/resources/application.yml
+    - run: echo "${{env.APPLICATION}}" > ./src/main/resources/application.yml
     - uses: actions/upload-artifact@v3
       with:
         name: application.yml
-        path: /home/ec2-user/Iterview-BE/src/main/resources/application.yml
+        path: ./src/main/resources/application.yml
         
         
     - name: Grant execute permission for gradlew
