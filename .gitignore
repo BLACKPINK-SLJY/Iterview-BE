@@ -34,7 +34,8 @@ out/
 /.nb-gradle/
 
 ### Config ###
-*.yml
+application.yml
+application-*.yml
 
 ### Log ###
 *.log
