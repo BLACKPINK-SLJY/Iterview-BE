@@ -52,28 +52,56 @@ jobs:
       with:
         arguments: clean build -x test
 
-    - name: Make zip file
-      run: zip -r ./$GITHUB_SHA.zip .
-      shell: bash
+    - name: Cleanup Gradle Cache
+      if: ${{ always() }}
+      run: |
+        rm -f ~/.gradle/caches/modules-2/modules-2.lock
+        rm -f ~/.gradle/caches/modules-2/gc.properties
 
-    # (4) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용 )
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
+    - name: Docker build
+      run: |
+        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        docker build -t ${{ secrets.PROJECT_NAME }} .
+        docker tag ${{ secrets.PROJECT_NAME }} ${{ secrets.DOCKER_HUB_REPO }}:${GITHUB_SHA::7}
+        docker push ${{ secrets.DOCKER_HUB_REPO }}:${GITHUB_SHA::7}
+
+    - name: Deploy
+      uses: appleboy/ssh-action@master
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
+        host: ${{ secrets.EC2_SERVER_HOST }}
+        username: ec2-user
+        key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        envs: GITHUB_SHA
+        script: |
+          docker rmi $(docker images -q)
+          docker pull ${{ secrets.DOCKER_HUB_REPO }}:${GITHUB_SHA::7}
+          docker tag ${{ secrets.DOCKER_HUB_REPO }}:${GITHUB_SHA::7} ${{ secrets.PROJECT_NAME }}
+          docker stop ${{ secrets.PROJECT_NAME }}
+          docker rm ${{ secrets.PROJECT_NAME }}
+          docker run -d --name ${{ secrets.PROJECT_NAME }} -p 80:8080 ${{ secrets.PROJECT_NAME }}
 
-    # (5) 빌드 결과물을 S3 버킷에 업로드
-    - name: Upload to AWS S3
-      run: |
-        aws s3 cp --region ${{ secrets.AWS_REGION }} ./$GITHUB_SHA.zip s3://${{ secrets.S3_BUCKET_NAME }}/$GITHUB_SHA.zip
+#    - name: Make zip file
+#      run: zip -r ./$GITHUB_SHA.zip .
+#      shell: bash
 
-    # (6) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
-    - name: Deploy to AWS EC2 from S3
-      run: |
-        aws deploy create-deployment \
-          --application-name ${{ secrets.CODE_DEPLOY_APPLICATION_NAME }} \
-          --deployment-config-name CodeDeployDefault.AllAtOnce \
-          --deployment-group-name ${{ secrets.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
-          --s3-location bucket=${{ secrets.S3_BUCKET_NAME }},key=$GITHUB_SHA.zip,bundleType=zip
+#    # (4) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용 )
+#    - name: Configure AWS credentials
+#      uses: aws-actions/configure-aws-credentials@v1
+#      with:
+#        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#        aws-region: ${{ secrets.AWS_REGION }}
+#
+#    # (5) 빌드 결과물을 S3 버킷에 업로드
+#    - name: Upload to AWS S3
+#      run: |
+#        aws s3 cp --region ${{ secrets.AWS_REGION }} ./$GITHUB_SHA.zip s3://${{ secrets.S3_BUCKET_NAME }}/$GITHUB_SHA.zip
+#
+#    # (6) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
+#    - name: Deploy to AWS EC2 from S3
+#      run: |
+#        aws deploy create-deployment \
+#          --application-name ${{ secrets.CODE_DEPLOY_APPLICATION_NAME }} \
+#          --deployment-config-name CodeDeployDefault.AllAtOnce \
+#          --deployment-group-name ${{ secrets.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
+#          --s3-location bucket=${{ secrets.S3_BUCKET_NAME }},key=$GITHUB_SHA.zip,bundleType=zip
