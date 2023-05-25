@@ -80,7 +80,7 @@ jobs:
           sudo docker tag ${{ secrets.DOCKER_HUB_REPO }}:${GITHUB_SHA::7} ${{ secrets.PROJECT_NAME }}
           sudo docker stop ${{ secrets.PROJECT_NAME }}
           sudo docker rm ${{ secrets.PROJECT_NAME }}
-          sudo docker run -d -p 8080:8080 --name ${{ secrets.PROJECT_NAME }} ${{ secrets.PROJECT_NAME }}
+          sudo docker run -d -p 8080:80 -p 8081:443 --name ${{ secrets.PROJECT_NAME }} ${{ secrets.PROJECT_NAME }}
 
 #    - name: Make zip file
 #      run: zip -r ./$GITHUB_SHA.zip .
