@@ -6,6 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import server.api.iterview.domain.bookmark.Bookmark;
+import server.api.iterview.domain.bookmark.BookmarkStatus;
 import server.api.iterview.domain.member.Member;
 import server.api.iterview.domain.question.Category;
 import server.api.iterview.domain.question.Question;
@@ -83,9 +84,8 @@ public class QuestionService {
 
     @Transactional
     public List<QuestionDto> getAllQuestion(Member member) {
-        List<Question> questions = questionRepository.findAll();
 
-        return getQuestionDtosFromQuestions(questions, member);
+        return getQuestionDtosFromQuestions(questionRepository.findAll(), member);
     }
 
     @Transactional
@@ -110,15 +110,30 @@ public class QuestionService {
     public List<QuestionDto> getQuestionDtosFromQuestions(List<Question> questions, Member member){
         List<QuestionDto> questionDtos = new ArrayList<>();
 
-        for(Question question: questions){
-            QuestionDto questionDto = QuestionDto.of(question);
-            Bookmark bookmark = bookmarkRepository.findByMemberAndQuestion(member, question)
-                    .orElse(new Bookmark());
+        if (member != null) {
+            for (Question question : questions) {
+                QuestionDto questionDto = QuestionDto.of(question);
+                Bookmark bookmark = bookmarkRepository.findByMemberAndQuestion(member, question)
+                        .orElse(new Bookmark());
 
-            questionDto.setBookmarked(bookmark.getStatus());
-            questionDtos.add(questionDto);
+                questionDto.setBookmarked(bookmark.getStatus());
+                questionDtos.add(questionDto);
+            }
+        }else{
+            for (Question question : questions) {
+                QuestionDto questionDto = QuestionDto.of(question);
+
+                questionDto.setBookmarked(BookmarkStatus.N);
+                questionDtos.add(questionDto);
+            }
         }
 
         return questionDtos;
+    }
+
+    @Transactional
+    public List<QuestionDto> getSearchResults(String word, Member member) {
+
+        return this.getQuestionDtosFromQuestions(questionRepository.getSearchResults(word), member);
     }
 }

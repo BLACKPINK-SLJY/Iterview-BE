@@ -30,7 +30,7 @@ public class MemberController {
             @ApiResponse(code = 40109, message = "회원가입에 실패하였습니다 (500)")
     })
     @PostMapping("/signup")
-    public ResponseEntity<ResponseMessage> signup(@RequestBody SignRequest request) {
+    public ResponseEntity<ResponseMessage<String>> signup(@RequestBody SignRequest request) {
         if(memberService.existsAccount(request.getAccount())){
             return new ResponseEntity<>(ResponseMessage.create(MemberResponseType.DUPLICATE_NICKNAME), MemberResponseType.DUPLICATE_NICKNAME.getHttpStatus());
         }
@@ -46,7 +46,7 @@ public class MemberController {
             @ApiResponse(code = 40101, message = "사용자를 찾을 수 없습니다. (400)"),
     })
     @PostMapping("/login")
-    public ResponseEntity<ResponseMessage> login(@RequestBody SignRequest request) {
+    public ResponseEntity<ResponseMessage<SignResponse>> login(@RequestBody SignRequest request) {
         SignResponse response = memberService.login(request);
 
         return new ResponseEntity<>(ResponseMessage.create(MemberResponseType.LOGIN_SUCCESS, response), MemberResponseType.LOGIN_SUCCESS.getHttpStatus());
@@ -60,7 +60,7 @@ public class MemberController {
             @ApiResponse(code = 40101, message = "사용자를 찾을 수 없습니다. (404)"),
     })
     @GetMapping("/member/info")
-    public ResponseEntity<ResponseMessage> getMemberInfo(@RequestHeader(name = "Authorization") String token){
+    public ResponseEntity<ResponseMessage<MemberInfoDto>> getMemberInfo(@RequestHeader(name = "Authorization") String token){
         String account = memberService.getAccountByToken(token);
         MemberInfoDto memberInfoDto = memberService.getMemberInfo(account);
 
@@ -74,7 +74,7 @@ public class MemberController {
             @ApiResponse(code = 40101, message = "사용자를 찾을 수 없습니다. (404)"),
     })
     @PostMapping("/refresh")
-    public ResponseEntity<ResponseMessage> refresh(@RequestBody TokenDto token) {
+    public ResponseEntity<ResponseMessage<TokenDto>> refresh(@RequestBody TokenDto token) {
         TokenDto tokenDto = memberService.refreshAccessToken(token);
 
         return new ResponseEntity<>(ResponseMessage.create(JwtResponseType.TOKEN_REISSUED, tokenDto), JwtResponseType.TOKEN_REISSUED.getHttpStatus());
@@ -87,21 +87,23 @@ public class MemberController {
             @ApiResponse(code = 40110, message = "회원탈퇴 실패 (500)"),
     })
     @GetMapping("/member/withdraw")
-    public ResponseEntity<ResponseMessage> withdraw(@RequestHeader("Authorization") String token){
+    public ResponseEntity<ResponseMessage<String>> withdraw(@RequestHeader("Authorization") String token){
         String account = memberService.getAccountByToken(token);
         memberService.withdraw(account);
 
         return new ResponseEntity<>(ResponseMessage.create(MemberResponseType.WITHDRAWAL_SUCCESS), MemberResponseType.WITHDRAWAL_SUCCESS.getHttpStatus());
     }
 
-
-//    @GetMapping("/user/get")
-//    public ResponseEntity<SignResponse> getUser(@RequestHeader("Authorization") String token, @RequestParam String account) throws Exception {
-//        return new ResponseEntity<>( memberService.getMember(account), HttpStatus.OK);
-//    }
+//    /**
+//     *
+//        @GetMapping("/user/get")
+//        public ResponseEntity<SignResponse> getUser(@RequestHeader("Authorization") String token, @RequestParam String account) throws Exception {
+//            return new ResponseEntity<>( memberService.getMember(account), HttpStatus.OK);
+//        }
 //
-//    @GetMapping("/admin/get")
-//    public ResponseEntity<SignResponse> getUserForAdmin(@RequestParam String account) throws Exception {
-//        return new ResponseEntity<>( memberService.getMember(account), HttpStatus.OK);
-//    }
+//        @GetMapping("/admin/get")
+//        public ResponseEntity<SignResponse> getUserForAdmin(@RequestParam String account) throws Exception {
+//            return new ResponseEntity<>( memberService.getMember(account), HttpStatus.OK);
+//        }
+//     */
 }
