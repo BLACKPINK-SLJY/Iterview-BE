@@ -136,4 +136,25 @@ public class QuestionService {
 
         return this.getQuestionDtosFromQuestions(questionRepository.getSearchResults(word), member);
     }
+
+    public List<QuestionDto> getAllQuestionsOrderByLevel(Member member) {
+        return this.getQuestionDtosFromQuestions(questionRepository.getAllQuestionsOrderByLevel(), member);
+    }
+
+    public List<QuestionDto> getQuestionsByCategoryOrderByLevel(String categoryString, Member member) {
+        Category category;
+        try{
+            category = Category.valueOf(categoryString.toUpperCase());
+        }catch (IllegalArgumentException e){
+            throw new BizException(QuestionResponseType.INVALID_CATEGORY);
+        }
+
+        List<Question> questions = questionRepository.getQuestionByCategoryOrderByLevel(category);
+
+        if(questions.isEmpty()){
+            return new ArrayList<>();
+        }
+
+        return this.getQuestionDtosFromQuestions(questions, member);
+    }
 }
