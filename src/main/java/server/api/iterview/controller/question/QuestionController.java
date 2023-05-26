@@ -16,7 +16,6 @@ import server.api.iterview.response.question.QuestionResponseType;
 import server.api.iterview.service.member.MemberService;
 import server.api.iterview.service.question.QuestionService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.*;
@@ -52,42 +51,44 @@ public class QuestionController {
             @ApiResponse(code = 20201, message = "질문 삭제 완료 (200)"),
     })
     @DeleteMapping("/question")
-    public ResponseEntity<ResponseMessage> deleteQuestion(
-            @Parameter(name = "id", description = "질문 id (Question ID)", in = QUERY) @RequestParam Long id){
+    public ResponseEntity<ResponseMessage<String>> deleteQuestion(
+            @Parameter(name = "id", description = "질문 id (Question ID)", in = QUERY) @RequestParam Long id
+    ){
         questionService.deleteQuestion(id);
 
         return new ResponseEntity<>(ResponseMessage.create(QuestionResponseType.DELETE_SUCCESS), QuestionResponseType.DELETE_SUCCESS.getHttpStatus());
     }
 
-    @ApiOperation(value = "질문 리스트", notes = "쿼리 없을 경우 전체질문 응답,\n  있을 경우 ios/aos/fe/be")
+    @ApiOperation(value = "질문 리스트", notes = "쿼리 없을 경우 전체질문 응답,\n  있을 경우 ios/aos/fe/be\n 로그인 안해도 요청 가능 \n 토큰 담으면 북마크 여부 제대로 리턴\n 비회원은 북마크 무조건 N")
     @ApiResponses({
             @ApiResponse(code = 20202, message = "질문 리스트 추출 성공 (200)"),
             @ApiResponse(code = 40200, message = "카테고리 쿼리가 유효하지 않음 (400)"),
     })
     @GetMapping("/question/list")
     public ResponseEntity<ResponseMessage<List<QuestionDto>>> getQuestionList(
-            @RequestHeader("Authorization") String token,
+            @RequestHeader(value = "Authorization", required = false) String token,
             @Parameter(name = "category", description = "X or ios/aos/fe/be", in = QUERY) @RequestParam(required = false) String category
     ){
-        Member member = memberService.getMemberByToken(token);
+        Member member = (token != null) ? memberService.getMemberByToken(token) : null;
+
         List<QuestionDto> questionDtos = (category == null) ? questionService.getAllQuestion(member) : questionService.getQuestionsByCategory(category, member);
 
         return new ResponseEntity<>(ResponseMessage.create(QuestionResponseType.LIST_GET_SUCCESS, questionDtos), QuestionResponseType.LIST_GET_SUCCESS.getHttpStatus());
     }
 
-    @ApiOperation(value = "질문 검색", notes = "질문 검색 - 검색어가 질문 혹은 태그에 포함\n난이도 순, 인기 순")
+    @ApiOperation(value = "질문 검색", notes = "질문 검색 - 검색어가 질문 혹은 태그에 포함\n 난이도 순, 인기 순\n 로그인 안해도 요청 가능\n 토큰 담으면 북마크 여부 제대로 리턴\n 비회원은 북마크 무조건 N")
     @ApiResponses({
             @ApiResponse(code = 20202, message = "질문 리스트 추출 성공 (200)"),
-            @ApiResponse(code = 40200, message = "카테고리 쿼리가 유효하지 않음 (400)"),
     })
     @GetMapping("/question/search/{word}")
     public ResponseEntity<ResponseMessage<List<QuestionDto>>> getSearchResults(
             @RequestHeader(value = "Authorization", required = false) String token,
             @PathVariable("word") String word
     ){
-        Member member = (token != null) ? memberService.getMemberByToken(token) : new Member();
+        Member member = (token != null) ? memberService.getMemberByToken(token) : null;
 
         List<QuestionDto> questionDtos = questionService.getSearchResults(word, member);
+
         return new ResponseEntity<>(ResponseMessage.create(QuestionResponseType.LIST_GET_SUCCESS, questionDtos), QuestionResponseType.LIST_GET_SUCCESS.getHttpStatus());
     }
 }
