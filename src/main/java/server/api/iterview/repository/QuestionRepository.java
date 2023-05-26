@@ -24,4 +24,9 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
                     "order by q.question_id"
             )
     List<Question> getSearchResults(@Param("word") String word);
+
+    @Query("select q from Question q order by q.level")
+    List<Question> getAllQuestionsOrderByLevel();
+
+    List<Question> getQuestionByCategoryOrderByLevel(Category category);
 }
