@@ -121,4 +121,14 @@ public class QuestionService {
 
         return questionDtos;
     }
+
+    @Transactional
+    public List<QuestionDto> getSearchResults(String word, Member member) {
+
+        List<Question> searchResults = questionRepository.getSearchResults(word);
+
+        List<QuestionDto> questionDtos = this.getQuestionDtosFromQuestions(searchResults, member);
+
+        return questionDtos;
+    }
 }

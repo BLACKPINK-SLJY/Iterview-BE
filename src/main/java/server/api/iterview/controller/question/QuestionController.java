@@ -16,6 +16,7 @@ import server.api.iterview.response.question.QuestionResponseType;
 import server.api.iterview.service.member.MemberService;
 import server.api.iterview.service.question.QuestionService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.*;
@@ -71,6 +72,22 @@ public class QuestionController {
         Member member = memberService.getMemberByToken(token);
         List<QuestionDto> questionDtos = (category == null) ? questionService.getAllQuestion(member) : questionService.getQuestionsByCategory(category, member);
 
+        return new ResponseEntity<>(ResponseMessage.create(QuestionResponseType.LIST_GET_SUCCESS, questionDtos), QuestionResponseType.LIST_GET_SUCCESS.getHttpStatus());
+    }
+
+    @ApiOperation(value = "질문 검색", notes = "질문 검색 - 검색어가 질문 혹은 태그에 포함\n난이도 순, 인기 순")
+    @ApiResponses({
+            @ApiResponse(code = 20202, message = "질문 리스트 추출 성공 (200)"),
+            @ApiResponse(code = 40200, message = "카테고리 쿼리가 유효하지 않음 (400)"),
+    })
+    @GetMapping("/question/search/{word}")
+    public ResponseEntity<ResponseMessage<List<QuestionDto>>> getSearchResults(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @PathVariable("word") String word
+    ){
+        Member member = (token != null) ? memberService.getMemberByToken(token) : new Member();
+
+        List<QuestionDto> questionDtos = questionService.getSearchResults(word, member);
         return new ResponseEntity<>(ResponseMessage.create(QuestionResponseType.LIST_GET_SUCCESS, questionDtos), QuestionResponseType.LIST_GET_SUCCESS.getHttpStatus());
     }
 }
