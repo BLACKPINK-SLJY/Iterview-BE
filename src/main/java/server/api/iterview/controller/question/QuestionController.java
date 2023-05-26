@@ -76,6 +76,22 @@ public class QuestionController {
         return new ResponseEntity<>(ResponseMessage.create(QuestionResponseType.LIST_GET_SUCCESS, questionDtos), QuestionResponseType.LIST_GET_SUCCESS.getHttpStatus());
     }
 
+    @ApiOperation(value = "질문 리스트 난이도 순", notes = "질문 리스트 난이도 순")
+    @ApiResponses({
+            @ApiResponse(code = 20202, message = "질문 리스트 추출 성공 (200"),
+    })
+    @GetMapping("/question/list/order/level")
+    public ResponseEntity<ResponseMessage<List<QuestionDto>>> getQuestionListOrderByLevel(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @Parameter(name = "category", description = "X or ios/aos/fe/be", in = QUERY) @RequestParam(required = false) String category
+    ){
+        Member member = (token != null) ? memberService.getMemberByToken(token) : null;
+
+        List<QuestionDto> questionDtos = (category == null) ? questionService.getAllQuestionsOrderByLevel(member) : questionService.getQuestionsByCategoryOrderByLevel(category, member);
+
+        return new ResponseEntity<>(ResponseMessage.create(QuestionResponseType.LIST_GET_SUCCESS, questionDtos), QuestionResponseType.LIST_GET_SUCCESS.getHttpStatus());
+    }
+
     @ApiOperation(value = "질문 검색", notes = "질문 검색 - 검색어가 질문 혹은 태그에 포함\n 난이도 순, 인기 순\n 로그인 안해도 요청 가능\n 토큰 담으면 북마크 여부 제대로 리턴\n 비회원은 북마크 무조건 N")
     @ApiResponses({
             @ApiResponse(code = 20202, message = "질문 리스트 추출 성공 (200)"),
