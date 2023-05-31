@@ -22,6 +22,7 @@ public class QuestionDto {
     private List<String> tags;
     private Integer level;
     private BookmarkStatus bookmarked;
+    private Long entireBookmarkedCount;
 
     public static QuestionDto of(Question question){
 //        Optional<String> tagString =  question.getTags().stream().map(Tag::getName).reduce((x, y) -> x + ", " + y);

@@ -122,6 +122,7 @@ public class QuestionService {
                 Bookmark bookmark = bookmarkRepository.findByMemberAndQuestion(member, question)
                         .orElse(new Bookmark());
 
+                questionDto.setEntireBookmarkedCount(bookmarkRepository.countByQuestionAndStatus(question, BookmarkStatus.Y));
                 questionDto.setBookmarked(bookmark.getStatus());
                 questionDtos.add(questionDto);
             }
@@ -129,6 +130,7 @@ public class QuestionService {
             for (Question question : questions) {
                 QuestionDto questionDto = QuestionDto.of(question);
 
+                questionDto.setEntireBookmarkedCount(bookmarkRepository.countByQuestionAndStatus(question, BookmarkStatus.Y));
                 questionDto.setBookmarked(BookmarkStatus.N);
                 questionDtos.add(questionDto);
             }
