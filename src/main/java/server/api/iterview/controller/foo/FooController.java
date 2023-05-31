@@ -2,19 +2,17 @@ package server.api.iterview.controller.foo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import server.api.iterview.dto.foo.FooDto;
 import server.api.iterview.response.BizException;
-import server.api.iterview.response.ResponseMessage;
+import server.api.iterview.response.ApiResponse;
 import server.api.iterview.response.foo.FooResponseType;
 import server.api.iterview.service.foo.FooService;
 
@@ -28,21 +26,14 @@ import static io.swagger.v3.oas.annotations.enums.ParameterIn.*;
 @RequestMapping("/v1")
 public class FooController {
     private final FooService fooService;
-
-    /**
-     * API 예시
-     * @param name
-     * @param title
-     * @return FooDto
-     * @Author Seungwoo, Joo
-     */
+    
     @ApiOperation(value = "요청 예시", notes = "요청 예시입니다!\nname에 \"error\" : controller에서 error 처리하는 경우\ntitle에 \"error\" : service에서 error 처리하는 경우")
     @ApiResponses({
-            @ApiResponse(code = 20001, message = "Foo 객체 정상 리턴 (200 OK)"),
-            @ApiResponse(code = 40001, message = "parameter 누락 (400 BAD_REQUEST)")
+            @io.swagger.annotations.ApiResponse(code = 20001, message = "Foo 객체 정상 리턴 (200 OK)"),
+            @io.swagger.annotations.ApiResponse(code = 40001, message = "parameter 누락 (400 BAD_REQUEST)")
     })
     @GetMapping("/foo")
-    public ResponseEntity<ResponseMessage> getFoo(
+    public ApiResponse<Object> getFoo(
             @Parameter(name = "name", description = "String", in = QUERY, required = false) @RequestParam(required = false) String name,
             @Parameter(name = "title", description = "String", in = QUERY, required = false) @RequestParam String title
     ){
@@ -61,6 +52,6 @@ public class FooController {
         log.info(FooResponseType.FOO_CREATE_SUCCESS.getMessage());
 
         // 응답해줄 데이터가 있으면 create() 함수의 두번째 인자에 Dto를 담아준다.
-        return new ResponseEntity<>(ResponseMessage.create(FooResponseType.FOO_CREATE_SUCCESS, fooDto), FooResponseType.FOO_CREATE_SUCCESS.getHttpStatus());
+        return ApiResponse.of(FooResponseType.FOO_CREATE_SUCCESS, fooDto);
     }
 }

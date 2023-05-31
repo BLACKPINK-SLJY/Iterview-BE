@@ -2,16 +2,14 @@ package server.api.iterview.controller.question;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.api.iterview.domain.member.Member;
 import server.api.iterview.dto.question.QuestionDto;
-import server.api.iterview.response.ResponseMessage;
+import server.api.iterview.response.ApiResponse;
 import server.api.iterview.response.question.QuestionResponseType;
 import server.api.iterview.service.member.MemberService;
 import server.api.iterview.service.question.QuestionService;
@@ -30,11 +28,11 @@ public class QuestionController {
     
     @ApiOperation(value = "질문 저장", notes = "질문 저장")
     @ApiResponses({
-            @ApiResponse(code = 20200, message = "질문 저장 완료 (200)"),
-            @ApiResponse(code = 40200, message = "카테고리 에러 (400)"),
+            @io.swagger.annotations.ApiResponse(code = 20200, message = "질문 저장 완료 (200)"),
+            @io.swagger.annotations.ApiResponse(code = 40200, message = "카테고리 에러 (400)"),
     })
     @PutMapping("/question")
-    public ResponseEntity<ResponseMessage<QuestionDto>> insertQuestion(
+    public ApiResponse<QuestionDto> insertQuestion(
             @Parameter(name = "content", description = "질문", in = QUERY) @RequestParam String content,
             @Parameter(name = "category", description = "ios / aos / fe / be", in = QUERY) @RequestParam String category,
             @Parameter(name = "keywords", description = "ex) 수평, 수직, 단방향, 양방향", in = QUERY) @RequestParam String keywords,
@@ -43,29 +41,29 @@ public class QuestionController {
     ){
         QuestionDto questionDto = questionService.insertTerm(content, category, keywords, tags, level);
 
-        return new ResponseEntity<>(ResponseMessage.create(QuestionResponseType.INSERT_SUCCESS, questionDto), QuestionResponseType.INSERT_SUCCESS.getHttpStatus());
+        return ApiResponse.of(QuestionResponseType.INSERT_SUCCESS, questionDto);
     }
     
     @ApiOperation(value = "질문 삭제", notes = "질문 삭제")
     @ApiResponses({
-            @ApiResponse(code = 20201, message = "질문 삭제 완료 (200)"),
+            @io.swagger.annotations.ApiResponse(code = 20201, message = "질문 삭제 완료 (200)"),
     })
     @DeleteMapping("/question")
-    public ResponseEntity<ResponseMessage<String>> deleteQuestion(
+    public ApiResponse<String> deleteQuestion(
             @Parameter(name = "id", description = "질문 id (Question ID)", in = QUERY) @RequestParam Long id
     ){
         questionService.deleteQuestion(id);
 
-        return new ResponseEntity<>(ResponseMessage.create(QuestionResponseType.DELETE_SUCCESS), QuestionResponseType.DELETE_SUCCESS.getHttpStatus());
+        return ApiResponse.of(QuestionResponseType.DELETE_SUCCESS);
     }
 
     @ApiOperation(value = "질문 리스트", notes = "쿼리 없을 경우 전체질문 응답,\n  있을 경우 ios/aos/fe/be\n 로그인 안해도 요청 가능 \n 토큰 담으면 북마크 여부 제대로 리턴\n 비회원은 북마크 무조건 N")
     @ApiResponses({
-            @ApiResponse(code = 20202, message = "질문 리스트 추출 성공 (200)"),
-            @ApiResponse(code = 40200, message = "카테고리 쿼리가 유효하지 않음 (400)"),
+            @io.swagger.annotations.ApiResponse(code = 20202, message = "질문 리스트 추출 성공 (200)"),
+            @io.swagger.annotations.ApiResponse(code = 40200, message = "카테고리 쿼리가 유효하지 않음 (400)"),
     })
     @GetMapping("/question/list")
-    public ResponseEntity<ResponseMessage<List<QuestionDto>>> getQuestionList(
+    public ApiResponse<List<QuestionDto>> getQuestionList(
             @RequestHeader(value = "Authorization", required = false) String token,
             @Parameter(name = "category", description = "X or ios/aos/fe/be", in = QUERY) @RequestParam(required = false) String category
     ){
@@ -73,15 +71,15 @@ public class QuestionController {
 
         List<QuestionDto> questionDtos = (category == null) ? questionService.getAllQuestion(member) : questionService.getQuestionsByCategory(category, member);
 
-        return new ResponseEntity<>(ResponseMessage.create(QuestionResponseType.LIST_GET_SUCCESS, questionDtos), QuestionResponseType.LIST_GET_SUCCESS.getHttpStatus());
+        return ApiResponse.of(QuestionResponseType.LIST_GET_SUCCESS, questionDtos);
     }
 
     @ApiOperation(value = "질문 리스트 난이도 순", notes = "질문 리스트 난이도 순")
     @ApiResponses({
-            @ApiResponse(code = 20202, message = "질문 리스트 추출 성공 (200"),
+            @io.swagger.annotations.ApiResponse(code = 20202, message = "질문 리스트 추출 성공 (200"),
     })
     @GetMapping("/question/list/order/level")
-    public ResponseEntity<ResponseMessage<List<QuestionDto>>> getQuestionListOrderByLevel(
+    public ApiResponse<List<QuestionDto>> getQuestionListOrderByLevel(
             @RequestHeader(value = "Authorization", required = false) String token,
             @Parameter(name = "category", description = "X or ios/aos/fe/be", in = QUERY) @RequestParam(required = false) String category
     ){
@@ -89,15 +87,15 @@ public class QuestionController {
 
         List<QuestionDto> questionDtos = (category == null) ? questionService.getAllQuestionsOrderByLevel(member) : questionService.getQuestionsByCategoryOrderByLevel(category, member);
 
-        return new ResponseEntity<>(ResponseMessage.create(QuestionResponseType.LIST_GET_SUCCESS, questionDtos), QuestionResponseType.LIST_GET_SUCCESS.getHttpStatus());
+        return ApiResponse.of(QuestionResponseType.LIST_GET_SUCCESS, questionDtos);
     }
 
     @ApiOperation(value = "질문 검색", notes = "질문 검색 - 검색어가 질문 혹은 태그에 포함\n 난이도 순, 인기 순\n 로그인 안해도 요청 가능\n 토큰 담으면 북마크 여부 제대로 리턴\n 비회원은 북마크 무조건 N")
     @ApiResponses({
-            @ApiResponse(code = 20202, message = "질문 리스트 추출 성공 (200)"),
+            @io.swagger.annotations.ApiResponse(code = 20202, message = "질문 리스트 추출 성공 (200)"),
     })
     @GetMapping("/question/search/{word}")
-    public ResponseEntity<ResponseMessage<List<QuestionDto>>> getSearchResults(
+    public ApiResponse<List<QuestionDto>> getSearchResults(
             @RequestHeader(value = "Authorization", required = false) String token,
             @PathVariable("word") String word
     ){
@@ -105,6 +103,6 @@ public class QuestionController {
 
         List<QuestionDto> questionDtos = questionService.getSearchResults(word, member);
 
-        return new ResponseEntity<>(ResponseMessage.create(QuestionResponseType.LIST_GET_SUCCESS, questionDtos), QuestionResponseType.LIST_GET_SUCCESS.getHttpStatus());
+        return ApiResponse.of(QuestionResponseType.LIST_GET_SUCCESS, questionDtos);
     }
 }
