@@ -1,8 +1,6 @@
 package server.api.iterview.response;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
@@ -10,14 +8,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(BizException.class)
-    public ResponseEntity<ResponseMessage> bizException(BizException e){
+    public ApiResponse<Object> bizException(BizException e){
         log.error("[{}] - {}", e.getStackTrace()[0], e.getMessage());
-        return new ResponseEntity<>(ResponseMessage.create(e.getBaseExceptionType()), e.getBaseExceptionType().getHttpStatus());
+        return ApiResponse.of(e.getBaseExceptionType());
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
-    public ResponseEntity<ResponseMessage> notResolvedException(Exception e){
+    public ApiResponse<Object> notResolvedException(Exception e){
         log.error("[{}] - {}", e.getStackTrace()[0], e.getMessage());
-        return new ResponseEntity<>(ResponseMessage.create(InternalServerExceptionType.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        return ApiResponse.of(InternalServerExceptionType.INTERNAL_SERVER_ERROR);
     }
 }
