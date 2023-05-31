@@ -32,6 +32,12 @@ public class QuestionService {
     private final BookmarkRepository bookmarkRepository;
 
     @Transactional
+    public Question findById(Long id){
+        return questionRepository.findById(id)
+                .orElseThrow(() -> new BizException(QuestionResponseType.NOT_EXIST));
+    }
+
+    @Transactional
     public QuestionDto insertTerm(String content, String categoryString, String keywords, String tags, Integer level) {
 
         Object[] tagStringList = Arrays.stream(tags.split(",")).map(String::trim).toArray();
@@ -156,5 +162,33 @@ public class QuestionService {
         }
 
         return this.getQuestionDtosFromQuestions(questions, member);
+    }
+
+    @Transactional
+    public void bookmarkQuestion(Member member, Long id) {
+        Question question = findById(id);
+        Bookmark bookmark = bookmarkRepository.findByMemberAndQuestion(member, question)
+                .orElse(null);
+
+        if(bookmark == null){
+            bookmarkRepository.save(Bookmark.builder()
+                    .member(member)
+                    .question(question)
+                    .status(BookmarkStatus.Y)
+                    .build());
+            return;
+        }
+
+        bookmark.setStatus(BookmarkStatus.Y);
+    }
+
+    @Transactional
+    public void unbookmarkQuestion(Member member, Long id){
+        Bookmark bookmark = bookmarkRepository.findByMemberAndQuestion(member, findById(id))
+                .orElse(null);
+
+        if(bookmark == null) return;
+
+        bookmark.setStatus(BookmarkStatus.N);
     }
 }
