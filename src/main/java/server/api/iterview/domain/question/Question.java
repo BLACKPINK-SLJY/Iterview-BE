@@ -5,11 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import server.api.iterview.domain.bookmark.Bookmark;
-import server.api.iterview.domain.folder.Folder;
 
 import javax.persistence.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -25,14 +23,11 @@ public class Question {
     @Column(name = "QUESTION_ID")
     private Long id;
 
-    @ManyToMany(mappedBy = "questions")
-    private List<Folder> folders = new ArrayList<>();
-
     @ManyToMany
     @JoinTable(name = "QUESTION_TAG",
             joinColumns = @JoinColumn(name = "QUESTION_ID"),
             inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
-    private List<Tag> tags = new ArrayList<>();
+    private List<Tag> tags;
 
     private String content;
 

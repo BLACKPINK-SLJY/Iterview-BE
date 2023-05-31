@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import server.api.iterview.domain.BaseTimeEntity;
 import server.api.iterview.domain.answer.Answer;
 import server.api.iterview.domain.bookmark.Bookmark;
-import server.api.iterview.domain.folder.Folder;
 
 import javax.persistence.*;
 import java.util.*;
@@ -35,14 +34,11 @@ public class Member extends BaseTimeEntity {
     @Builder.Default
     private List<Authority> roles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Folder> folders = new ArrayList<>();
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Answer> answers;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Answer> answers = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Bookmark> bookmarks = new ArrayList<>();
+    private List<Bookmark> bookmarks;
 
     public void setRoles(List<Authority> role) {
         this.roles = role;
