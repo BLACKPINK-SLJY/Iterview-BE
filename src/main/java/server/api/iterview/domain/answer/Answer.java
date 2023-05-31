@@ -9,7 +9,6 @@ import server.api.iterview.domain.transcription.Transcription;
 
 import javax.persistence.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -35,6 +34,6 @@ public class Answer extends BaseTimeEntity {
     private Question question;
 
     @OneToMany(mappedBy = "answer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Transcription> transcriptions = new ArrayList<>();
+    private List<Transcription> transcriptions;
 
 }
