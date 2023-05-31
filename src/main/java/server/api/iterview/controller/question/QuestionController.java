@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import server.api.iterview.domain.member.Member;
 import server.api.iterview.dto.question.QuestionDto;
 import server.api.iterview.response.ApiResponse;
+import server.api.iterview.response.BizException;
+import server.api.iterview.response.member.MemberResponseType;
 import server.api.iterview.response.question.QuestionResponseType;
 import server.api.iterview.service.member.MemberService;
 import server.api.iterview.service.question.QuestionService;
@@ -104,5 +106,45 @@ public class QuestionController {
         List<QuestionDto> questionDtos = questionService.getSearchResults(word, member);
 
         return ApiResponse.of(QuestionResponseType.LIST_GET_SUCCESS, questionDtos);
+    }
+
+    @ApiOperation(value = "질문 북마크", notes = "질분 북마크.\n token 값이 없으면 로그인한 사용자가 아닌걸로 간주, 401 UNAUTHORIZED 응답")
+    @ApiResponses({
+            @io.swagger.annotations.ApiResponse(code = 20203, message = "북마크 성공"),
+            @io.swagger.annotations.ApiResponse(code = 40111, message = "로그인 하지 않았습니다."),
+    })
+    @PutMapping("/question/bookmark/{id}")
+    public ApiResponse<Object> bookmarkQuestion(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @Parameter(name = "id", description = "question id", in = PATH) @PathVariable("id") Long id
+    ){
+        if (token == null){
+            throw new BizException(MemberResponseType.NOT_LOGGED_IN);
+        }
+
+        Member member = memberService.getMemberByToken(token);
+        questionService.bookmarkQuestion(member, id);
+
+        return ApiResponse.of(QuestionResponseType.BOOKMARK_SUCCESS);
+    }
+
+    @ApiOperation(value = "질문 북마크 취소", notes = "질분 북마크 취소.\n token 값이 없으면 로그인한 사용자가 아닌걸로 간주, 401 UNAUTHORIZED 응답")
+    @ApiResponses({
+            @io.swagger.annotations.ApiResponse(code = 20204, message = "북마크 성공"),
+            @io.swagger.annotations.ApiResponse(code = 40111, message = "로그인 하지 않았습니다."),
+    })
+    @PutMapping("/question/unbookmark/{id}")
+    public ApiResponse<Object> unbookmarkQuestion(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @Parameter(name = "id", description = "question id", in = PATH) @PathVariable("id") Long id
+    ){
+        if (token == null){
+            throw new BizException(MemberResponseType.NOT_LOGGED_IN);
+        }
+
+        Member member = memberService.getMemberByToken(token);
+        questionService.unbookmarkQuestion(member, id);
+
+        return ApiResponse.of(QuestionResponseType.UNBOOKMARK_SUCCESS);
     }
 }

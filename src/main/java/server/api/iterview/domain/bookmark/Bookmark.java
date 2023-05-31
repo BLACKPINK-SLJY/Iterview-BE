@@ -1,5 +1,7 @@
 package server.api.iterview.domain.bookmark;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import server.api.iterview.domain.member.Member;
@@ -11,6 +13,8 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @IdClass(BookmarkId.class)
+@Builder
+@AllArgsConstructor
 public class Bookmark {
     @Id
     @ManyToOne
@@ -23,5 +27,9 @@ public class Bookmark {
     private Question question;
 
     @Enumerated(EnumType.STRING)
-    private BookmarkStatus status = BookmarkStatus.N;
+    private BookmarkStatus status;
+
+    public void setStatus(BookmarkStatus status){
+        this.status = status;
+    }
 }
