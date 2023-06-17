@@ -54,7 +54,7 @@ public class AnswerController {
     ){
         Member member = memberService.getMemberByToken(token);
 
-        answerService.update(member, questionService.findById(questionId));
+        answerService.syncDB(member, questionService.findById(questionId));
 
         return ApiResponse.of(AnswerResponseType.SYNC_DB_AFTER_UPLOAD_VIDEO_OK);
     }

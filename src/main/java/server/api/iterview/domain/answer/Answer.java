@@ -37,8 +37,21 @@ public class Answer extends BaseTimeEntity {
     @OneToMany(mappedBy = "answer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transcription> transcriptions;
 
+    private String content;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private TranscriptStatus transcriptStatus = TranscriptStatus.N;
+
     public void updateModifiedDate(){
         super.setModifiedDate(LocalDateTime.now());
     }
 
+    public void setContent(String content){
+        this.content = content;
+    }
+
+    public void setTranscriptStatus(TranscriptStatus status){
+        this.transcriptStatus = status;
+    }
 }

@@ -44,8 +44,6 @@ public class TranscriptionService {
     @Value("${cloud.aws.S3.bucket}")
     private String bucket;
 
-    private final MemberRepository memberRepository;
-
     public AmazonTranscribe transcribeClient(){
         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
         AWSStaticCredentialsProvider awsStaticCredentialsProvider = new AWSStaticCredentialsProvider(awsCredentials);
@@ -73,7 +71,6 @@ public class TranscriptionService {
         Boolean resultFound = false;
         GetTranscriptionJobResult getTranscriptionJobResult = new GetTranscriptionJobResult();
         TranscriptionJob transcriptionJob;
-        int i = 0;
 
         while(!resultFound){
             getTranscriptionJobResult = transcribeClient().getTranscriptionJob(getTranscriptionJobRequest);
@@ -90,9 +87,6 @@ public class TranscriptionService {
                     .equalsIgnoreCase(TranscriptionJobStatus.IN_PROGRESS.name())){
                 try{
                     Thread.sleep(4 * 1000); // 3초
-                    System.out.println(i++ + "===============");
-                    System.out.println(transcriptionJob.getStartTime());
-                    System.out.println(transcriptionJob.getCompletionTime());
                 }catch (InterruptedException e){
                     throw new BizException(TranscribeResponseType.TRANSCRIBE_FAIL);
                 }
@@ -136,13 +130,12 @@ public class TranscriptionService {
     }
 
     public TranscriptionResponseDTO extractSpeechTextFromVideo(Member member, Long questionId) {
-        String username = member.getAccount();
-        String fileName = null;
+        String userUUID = member.getUuid();
 
-        log.info("Request to extract Speech Text from Video : " + username + "/" + questionId + "/" + fileName);
+        log.info("Request to extract Speech Text from Video of " + member.getAccount() + " : "+ userUUID + "/" + questionId);
 
         // Start Transcription Job and get result
-        StartTranscriptionJobResult startTranscriptionJobResult = startTranscriptionJob(username + "/" + fileName);
+        StartTranscriptionJobResult startTranscriptionJobResult = startTranscriptionJob( userUUID + "/" + questionId);
 
         // Get name of job started for the file
         String transcriptionJobName = startTranscriptionJobResult.getTranscriptionJob().getTranscriptionJobName();
