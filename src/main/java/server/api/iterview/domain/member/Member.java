@@ -29,6 +29,7 @@ public class Member extends BaseTimeEntity {
     private String password;
 
     private String refreshToken;
+    private String uuid;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Builder.Default
@@ -49,4 +50,8 @@ public class Member extends BaseTimeEntity {
         this.refreshToken = refreshToken;
     }
 
+    @PrePersist
+    public void setUUID(){
+        this.uuid = UUID.randomUUID().toString();
+    }
 }

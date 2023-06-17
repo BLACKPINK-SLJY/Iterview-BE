@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import server.api.iterview.domain.answer.Answer;
+import server.api.iterview.domain.answer.AnsweredStatus;
 import server.api.iterview.domain.bookmark.Bookmark;
 import server.api.iterview.domain.bookmark.BookmarkStatus;
 import server.api.iterview.domain.member.Member;
@@ -12,6 +14,7 @@ import server.api.iterview.domain.question.Category;
 import server.api.iterview.domain.question.Question;
 import server.api.iterview.domain.question.Tag;
 import server.api.iterview.dto.question.QuestionDto;
+import server.api.iterview.repository.AnswerRepository;
 import server.api.iterview.repository.BookmarkRepository;
 import server.api.iterview.repository.QuestionRepository;
 import server.api.iterview.repository.TagRepository;
@@ -30,6 +33,7 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final TagRepository tagRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final AnswerRepository answerRepository;
 
     @Transactional
     public Question findById(Long id){
@@ -120,10 +124,14 @@ public class QuestionService {
             for (Question question : questions) {
                 QuestionDto questionDto = QuestionDto.of(question);
                 Bookmark bookmark = bookmarkRepository.findByMemberAndQuestion(member, question)
-                        .orElse(new Bookmark());
+                        .orElse(null);
+
+                Answer answer = answerRepository.findByMemberAndQuestion(member, question)
+                                .orElse(null);
 
                 questionDto.setEntireBookmarkedCount(bookmarkRepository.countByQuestionAndStatus(question, BookmarkStatus.Y));
-                questionDto.setBookmarked(bookmark.getStatus());
+                questionDto.setBookmarked((bookmark == null) ? BookmarkStatus.N : bookmark.getStatus());
+                questionDto.setAnswered((answer == null) ? AnsweredStatus.N : AnsweredStatus.Y);
                 questionDtos.add(questionDto);
             }
         }else{
@@ -131,7 +139,6 @@ public class QuestionService {
                 QuestionDto questionDto = QuestionDto.of(question);
 
                 questionDto.setEntireBookmarkedCount(bookmarkRepository.countByQuestionAndStatus(question, BookmarkStatus.Y));
-                questionDto.setBookmarked(BookmarkStatus.N);
                 questionDtos.add(questionDto);
             }
         }
@@ -192,5 +199,53 @@ public class QuestionService {
         if(bookmark == null) return;
 
         bookmark.setStatus(BookmarkStatus.N);
+    }
+
+    @Transactional
+    public List<QuestionDto> getMyAnsweredAllQuestion(Member member) {
+
+        return getQuestionDtosFromQuestions(questionRepository.getMyAnsweredQuestions(member), member);
+    }
+
+    @Transactional
+    public List<QuestionDto> getMyAnsweredQuestionsByCategory(String categoryString, Member member) {
+        Category category;
+        try{
+            category = Category.valueOf(categoryString.toUpperCase());
+        }catch (IllegalArgumentException e){
+            throw new BizException(QuestionResponseType.INVALID_CATEGORY);
+        }
+
+        List<Question> questions = questionRepository.getMyAnsweredQuestionsByCategory(member, category);
+
+        if(questions.isEmpty()){
+            return new ArrayList<>();
+        }
+
+        return getQuestionDtosFromQuestions(questions, member);
+    }
+
+    @Transactional
+    public List<QuestionDto> getMyBookmarkedAllQuestion(Member member) {
+
+        return getQuestionDtosFromQuestions(questionRepository.getMyBookmarkedQuestions(member, BookmarkStatus.Y), member);
+    }
+
+    @Transactional
+    public List<QuestionDto> getMyBookmarkedQuestionsByCategory(String categoryString, Member member) {
+        Category category;
+        try{
+            category = Category.valueOf(categoryString.toUpperCase());
+        }catch (IllegalArgumentException e){
+            throw new BizException(QuestionResponseType.INVALID_CATEGORY);
+        }
+
+        List<Question> questions = questionRepository.getMyBookmarkedQuestionsByCategory(member, BookmarkStatus.Y, category);
+
+        if(questions.isEmpty()){
+            return new ArrayList<>();
+        }
+
+        return getQuestionDtosFromQuestions(questions, member);
     }
 }

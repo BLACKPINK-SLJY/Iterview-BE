@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
+import server.api.iterview.domain.bookmark.BookmarkStatus;
+import server.api.iterview.domain.member.Member;
 import server.api.iterview.domain.question.Category;
 import server.api.iterview.domain.question.Question;
 
@@ -20,7 +22,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
                     "on q.question_id = qt.question_id " +
                     "inner join Tag t " +
                     "on qt.tag_id = t.tag_id " +
-                    "where q.content like concat('%', :word, '%') or t.name like concat('%', :word, '%') " +
+                    "where LOWER(q.content) like LOWER(concat('%', :word, '%')) or LOWER(t.name) like LOWER(concat('%', :word, '%')) " +
                     "order by q.question_id"
             )
     List<Question> getSearchResults(@Param("word") String word);
@@ -29,4 +31,28 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> getAllQuestionsOrderByLevel();
 
     List<Question> getQuestionByCategoryOrderByLevel(Category category);
+
+    @Query("select q from Question q " +
+            "inner join Answer a " +
+            "on q.id = a.question.id " +
+            "where a.member = :member")
+    List<Question> getMyAnsweredQuestions(@Param("member")Member member);
+
+    @Query("select q from Question q " +
+            "inner join Answer a " +
+            "on q.id = a.question.id " +
+            "where a.member = :member and q.category = :category")
+    List<Question> getMyAnsweredQuestionsByCategory(@Param("member")Member member, @Param("category")Category category);
+
+    @Query("select q from Question q " +
+            "inner join Bookmark b " +
+            "on q.id = b.question.id " +
+            "where b.member = :member and b.status = :status")
+    List<Question> getMyBookmarkedQuestions(@Param("member") Member member, @Param("status")BookmarkStatus status);
+
+    @Query("select q from Question q " +
+            "inner join Bookmark b " +
+            "on q.id = b.question.id " +
+            "where b.member = :member and b.status = :status and q.category = :category")
+    List<Question> getMyBookmarkedQuestionsByCategory(@Param("member") Member member, @Param("status") BookmarkStatus status, @Param("category") Category category);
 }
