@@ -200,4 +200,28 @@ public class QuestionService {
 
         bookmark.setStatus(BookmarkStatus.N);
     }
+
+    @Transactional
+    public List<QuestionDto> getMyAllQuestion(Member member) {
+
+        return getQuestionDtosFromQuestions(questionRepository.getMyAnsweredQuestions(member), member);
+    }
+
+    @Transactional
+    public List<QuestionDto> getMyQuestionsByCategory(String categoryString, Member member) {
+        Category category;
+        try{
+            category = Category.valueOf(categoryString.toUpperCase());
+        }catch (IllegalArgumentException e){
+            throw new BizException(QuestionResponseType.INVALID_CATEGORY);
+        }
+
+        List<Question> questions = questionRepository.getMyAnsweredQuestionsByCategory(member, category);
+
+        if(questions.isEmpty()){
+            return new ArrayList<>();
+        }
+
+        return getQuestionDtosFromQuestions(questions, member);
+    }
 }

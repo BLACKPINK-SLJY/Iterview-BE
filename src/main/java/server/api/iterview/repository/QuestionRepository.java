@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
+import server.api.iterview.domain.member.Member;
 import server.api.iterview.domain.question.Category;
 import server.api.iterview.domain.question.Question;
 
@@ -29,4 +30,16 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> getAllQuestionsOrderByLevel();
 
     List<Question> getQuestionByCategoryOrderByLevel(Category category);
+
+    @Query("select q from Question q " +
+            "inner join Answer a " +
+            "on q.id = a.question.id " +
+            "where a.member = :member")
+    List<Question> getMyAnsweredQuestions(@Param("member")Member member);
+
+    @Query("select q from Question q " +
+            "inner join Answer a " +
+            "on q.id = a.question.id " +
+            "where a.member = :member and q.category = :category")
+    List<Question> getMyAnsweredQuestionsByCategory(@Param("member")Member member, @Param("category")Category category);
 }
