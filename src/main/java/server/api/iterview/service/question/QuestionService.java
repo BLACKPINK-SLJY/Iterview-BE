@@ -202,13 +202,13 @@ public class QuestionService {
     }
 
     @Transactional
-    public List<QuestionDto> getMyAllQuestion(Member member) {
+    public List<QuestionDto> getMyAnsweredAllQuestion(Member member) {
 
         return getQuestionDtosFromQuestions(questionRepository.getMyAnsweredQuestions(member), member);
     }
 
     @Transactional
-    public List<QuestionDto> getMyQuestionsByCategory(String categoryString, Member member) {
+    public List<QuestionDto> getMyAnsweredQuestionsByCategory(String categoryString, Member member) {
         Category category;
         try{
             category = Category.valueOf(categoryString.toUpperCase());
@@ -217,6 +217,30 @@ public class QuestionService {
         }
 
         List<Question> questions = questionRepository.getMyAnsweredQuestionsByCategory(member, category);
+
+        if(questions.isEmpty()){
+            return new ArrayList<>();
+        }
+
+        return getQuestionDtosFromQuestions(questions, member);
+    }
+
+    @Transactional
+    public List<QuestionDto> getMyBookmarkedAllQuestion(Member member) {
+
+        return getQuestionDtosFromQuestions(questionRepository.getMyBookmarkedQuestions(member, BookmarkStatus.Y), member);
+    }
+
+    @Transactional
+    public List<QuestionDto> getMyBookmarkedQuestionsByCategory(String categoryString, Member member) {
+        Category category;
+        try{
+            category = Category.valueOf(categoryString.toUpperCase());
+        }catch (IllegalArgumentException e){
+            throw new BizException(QuestionResponseType.INVALID_CATEGORY);
+        }
+
+        List<Question> questions = questionRepository.getMyBookmarkedQuestionsByCategory(member, BookmarkStatus.Y, category);
 
         if(questions.isEmpty()){
             return new ArrayList<>();
