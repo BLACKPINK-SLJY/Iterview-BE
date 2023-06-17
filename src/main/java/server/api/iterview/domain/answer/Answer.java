@@ -1,5 +1,7 @@
 package server.api.iterview.domain.answer;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import server.api.iterview.domain.BaseTimeEntity;
@@ -9,6 +11,7 @@ import server.api.iterview.domain.transcription.Transcription;
 
 import javax.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -16,14 +19,12 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class Answer extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = IDENTITY)
     @Column(name = "ANSWER_ID")
     private Long id;
-
-    private String date;
-
-    private String videoUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
@@ -36,4 +37,21 @@ public class Answer extends BaseTimeEntity {
     @OneToMany(mappedBy = "answer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transcription> transcriptions;
 
+    private String content;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private TranscriptStatus transcriptStatus = TranscriptStatus.N;
+
+    public void updateModifiedDate(){
+        super.setModifiedDate(LocalDateTime.now());
+    }
+
+    public void setContent(String content){
+        this.content = content;
+    }
+
+    public void setTranscriptStatus(TranscriptStatus status){
+        this.transcriptStatus = status;
+    }
 }

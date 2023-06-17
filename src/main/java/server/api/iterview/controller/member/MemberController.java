@@ -14,6 +14,7 @@ import server.api.iterview.response.BizException;
 import server.api.iterview.response.jwt.JwtResponseType;
 import server.api.iterview.response.member.MemberResponseType;
 import server.api.iterview.service.member.MemberService;
+import server.api.iterview.service.s3.AmazonS3Service;
 
 @Api(tags = "Member")
 @RequiredArgsConstructor
