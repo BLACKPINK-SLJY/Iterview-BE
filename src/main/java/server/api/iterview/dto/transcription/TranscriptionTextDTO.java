@@ -37,4 +37,8 @@ public class TranscriptionTextDTO implements Serializable {
                 "transcript=" + getTranscript() +
                 "}";
     }
+
+    public TranscriptionTextDTO(String transcript){
+        this.transcript = transcript;
+    }
 }

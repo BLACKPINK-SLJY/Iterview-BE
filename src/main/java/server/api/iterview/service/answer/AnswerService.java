@@ -9,12 +9,16 @@ import server.api.iterview.domain.answer.TranscriptStatus;
 import server.api.iterview.domain.member.Member;
 import server.api.iterview.domain.question.Question;
 import server.api.iterview.domain.transcription.Transcription;
+import server.api.iterview.dto.answer.AnswerResponseDto;
 import server.api.iterview.dto.transcription.*;
 import server.api.iterview.repository.AnswerRepository;
 import server.api.iterview.repository.TranscriptionRepository;
 import server.api.iterview.response.BizException;
 import server.api.iterview.response.answer.AnswerResponseType;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -26,6 +30,7 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
     private final TranscriptionRepository transcriptionRepository;
 
+    @Transactional(readOnly = true)
     public Answer findAnswerByMemberAndQuestionId(Member member, Long questionId){
         return answerRepository.findByMemberAndQuestionId(member, questionId)
                 .orElseThrow(() -> new BizException(AnswerResponseType.NO_ANSWER_RESULT));
@@ -51,7 +56,7 @@ public class AnswerService {
     public void saveTranscriptionOnAnswer(TranscriptionResultDTO results, Answer answer){
         String transcription = "";
         for(TranscriptionTextDTO transcriptionTextDto : results.getTranscripts()){
-            transcription += transcriptionTextDto.getTranscript();
+            transcription = transcription.concat(transcriptionTextDto.getTranscript());
         }
 
         answer.setContent(transcription);
@@ -85,5 +90,66 @@ public class AnswerService {
         saveTranscriptionFragments(results.getItems(), answer);
 
         answer.setTranscriptStatus(TranscriptStatus.Y);
+    }
+
+    @Transactional(readOnly = true)
+    public AnswerResponseDto getAnswerResponse(Question question, Answer answer, String preSignedUrl) {
+
+        return AnswerResponseDto.builder()
+                .category(question.getCategory().name())
+                .date(getFormattedAnswerDate(answer.getModifiedDate()))
+                .url(preSignedUrl)
+                .results(getTranscriptionResult(answer))
+                .build();
+    }
+
+    public TranscriptionResultDTO getTranscriptionResult(Answer answer){
+        List<TranscriptionTextDTO> transcripts = List.of(new TranscriptionTextDTO(answer.getContent()));
+
+        List<TranscriptionItemDTO> items = new ArrayList<>();
+        for(Transcription transcription : answer.getTranscriptions()){
+            List<TranscriptionItemAlternativesDTO> alternatives = List.of(TranscriptionItemAlternativesDTO.builder()
+                    .confidence(transcription.getConfidence())
+                    .content(transcription.getContent())
+                    .build());
+
+            items.add(TranscriptionItemDTO.builder()
+                    .start_time(transcription.getStartTime())
+                    .end_time(transcription.getEndTime())
+                    .alternatives(alternatives)
+                    .build());
+        }
+
+        return TranscriptionResultDTO.builder()
+                .transcripts(transcripts)
+                .items(items)
+                .build();
+    }
+
+    public String getFormattedAnswerDate(LocalDateTime date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd ");
+
+        return date.format(formatter).concat(getDayOfWeek(date.getDayOfWeek().getValue()));
+    }
+
+    public String getDayOfWeek(Integer day){
+        switch (day){
+            case 1:
+                return "월요일";
+            case 2:
+                return "화요일";
+            case 3:
+                return "수요일";
+            case 4:
+                return "목요일";
+            case 5:
+                return "금요일";
+            case 6:
+                return "토요일";
+            case 7:
+                return "일요일";
+            default:
+                return "null";
+        }
     }
 }

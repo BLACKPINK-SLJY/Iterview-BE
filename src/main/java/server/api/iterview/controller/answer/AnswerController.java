@@ -9,8 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import server.api.iterview.domain.answer.Answer;
 import server.api.iterview.domain.member.Member;
+import server.api.iterview.domain.question.Question;
 import server.api.iterview.dto.amazonS3.PresignedUrlResponseDto;
+import server.api.iterview.dto.answer.AnswerResponseDto;
 import server.api.iterview.response.ApiResponse;
 import server.api.iterview.response.amazonS3.AmazonS3ResponseType;
 import server.api.iterview.response.answer.AnswerResponseType;
@@ -75,4 +78,23 @@ public class AnswerController {
         return ApiResponse.of(AmazonS3ResponseType.PRESIGNED_URL_ISSUANCE_SUCCESS, new PresignedUrlResponseDto(preSignedUrl));
     }
 
+    @ApiOperation(value = "내 답변 보기", notes = "내 답변 보기에서 필요한 모든 정보")
+    @ApiResponses({
+            @io.swagger.annotations.ApiResponse(code = 20502, message = "내 답변 보기 응답 성공 (200)"),
+            @io.swagger.annotations.ApiResponse(code = 40301, message = "presigned-url 발급에 실패하였습니다. (500)"),
+    })
+    @GetMapping("/answer")
+    public ApiResponse<Object> getMyAnswer(
+            @Parameter(name = "Authorization", description = "Bearer {accessToken}", in = HEADER) @RequestHeader(name = "Authorization") String token,
+            @RequestParam Long questionId
+    ){
+        Member member = memberService.getMemberByToken(token);
+        Answer answer = answerService.findAnswerByMemberAndQuestionId(member, questionId);
+        Question question = questionService.findById(questionId);
+        String preSignedUrl = amazonS3Service.getPresignedUrl(member, questionId);
+
+        AnswerResponseDto response = answerService.getAnswerResponse(question, answer, preSignedUrl);
+
+        return ApiResponse.of(AnswerResponseType.MY_ANSWER_SUCCESS, response);
+    }
 }

@@ -1,5 +1,6 @@
 package server.api.iterview.dto.transcription;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Data
+@Builder
 public class TranscriptionItemDTO implements Serializable {
     private static final long serialVersionUID = 1L;
     private String start_time;

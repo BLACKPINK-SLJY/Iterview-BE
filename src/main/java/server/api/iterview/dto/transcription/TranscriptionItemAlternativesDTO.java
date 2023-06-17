@@ -1,11 +1,13 @@
 package server.api.iterview.dto.transcription;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 @Data
+@Builder
 public class TranscriptionItemAlternativesDTO implements Serializable {
     private static final long serialVersionUID = 1L;
     private String confidence;
