@@ -148,21 +148,37 @@ public class QuestionController {
         return ApiResponse.of(QuestionResponseType.UNBOOKMARK_SUCCESS);
     }
 
-    @ApiOperation(value = "내가 푼 문제", notes = "쿼리 없을 경우 전체질문 응답,\n  있을 경우 ios/aos/fe/be\n")
+    @ApiOperation(value = "my page - 내가 푼 문제", notes = "쿼리 없을 경우 전체질문 응답,\n  있을 경우 ios/aos/fe/be\n")
     @ApiResponses({
             @io.swagger.annotations.ApiResponse(code = 20202, message = "질문 리스트 추출 성공 (200)"),
             @io.swagger.annotations.ApiResponse(code = 40200, message = "카테고리 쿼리가 유효하지 않음 (400)"),
     })
-    @GetMapping("/question/my")
+    @GetMapping("/question/my/answered")
     public ApiResponse<List<QuestionDto>> getMyAnsweredQuestionList(
             @RequestHeader(value = "Authorization") String token,
             @Parameter(name = "category", description = "X or ios/aos/fe/be", in = QUERY) @RequestParam(required = false) String category
     ){
         Member member = (token != null) ? memberService.getMemberByToken(token) : null;
 
-        List<QuestionDto> questionDtos = (category == null) ? questionService.getMyAllQuestion(member) : questionService.getMyQuestionsByCategory(category, member);
+        List<QuestionDto> questionDtos = (category == null) ? questionService.getMyAnsweredAllQuestion(member) : questionService.getMyAnsweredQuestionsByCategory(category, member);
 
         return ApiResponse.of(QuestionResponseType.LIST_GET_SUCCESS, questionDtos);
     }
 
+    @ApiOperation(value = "my page - 북마크한 문제들", notes = "쿼리 없을 경우 전체질문 응답,\n  있을 경우 ios/aos/fe/be\n")
+    @ApiResponses({
+            @io.swagger.annotations.ApiResponse(code = 20202, message = "질문 리스트 추출 성공 (200)"),
+            @io.swagger.annotations.ApiResponse(code = 40200, message = "카테고리 쿼리가 유효하지 않음 (400)"),
+    })
+    @GetMapping("/question/my/bookmarked")
+    public ApiResponse<List<QuestionDto>> getMyBookmarkedQuestionList(
+            @RequestHeader(value = "Authorization") String token,
+            @Parameter(name = "category", description = "X or ios/aos/fe/be", in = QUERY) @RequestParam(required = false) String category
+    ){
+        Member member = (token != null) ? memberService.getMemberByToken(token) : null;
+
+        List<QuestionDto> questionDtos = (category == null) ? questionService.getMyBookmarkedAllQuestion(member) : questionService.getMyBookmarkedQuestionsByCategory(category, member);
+
+        return ApiResponse.of(QuestionResponseType.LIST_GET_SUCCESS, questionDtos);
+    }
 }
