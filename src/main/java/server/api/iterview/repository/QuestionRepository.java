@@ -22,7 +22,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
                     "on q.question_id = qt.question_id " +
                     "inner join Tag t " +
                     "on qt.tag_id = t.tag_id " +
-                    "where q.content like concat('%', :word, '%') or t.name like concat('%', :word, '%') " +
+                    "where LOWER(q.content) like LOWER(concat('%', :word, '%')) or LOWER(t.name) like LOWER(concat('%', :word, '%')) " +
                     "order by q.question_id"
             )
     List<Question> getSearchResults(@Param("word") String word);
