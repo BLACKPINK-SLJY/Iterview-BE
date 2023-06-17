@@ -63,7 +63,8 @@ public class SecurityConfig {
                 .antMatchers("/signup", "/login", "/refresh", "/question", "/question/list/**", "/question/search/**").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/member/**", "/question/**").hasRole("USER")
-                .anyRequest().denyAll()
+//                .anyRequest().denyAll()
+                .anyRequest().permitAll()
                 .and()
                 // JWT 인증 필터 적용
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
