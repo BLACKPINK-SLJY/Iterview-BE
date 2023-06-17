@@ -1,6 +1,7 @@
 package server.api.iterview.dto.question;
 
 import lombok.*;
+import server.api.iterview.domain.answer.AnsweredStatus;
 import server.api.iterview.domain.bookmark.BookmarkStatus;
 import server.api.iterview.domain.question.Question;
 import server.api.iterview.domain.question.Tag;
@@ -23,6 +24,7 @@ public class QuestionDto {
     private Integer level;
     private BookmarkStatus bookmarked;
     private Long entireBookmarkedCount;
+    private AnsweredStatus answered;
 
     public static QuestionDto of(Question question){
 //        Optional<String> tagString =  question.getTags().stream().map(Tag::getName).reduce((x, y) -> x + ", " + y);
@@ -44,7 +46,8 @@ public class QuestionDto {
                 .keywords(keywordStrings)
                 .tags(tagStrings)
                 .level(question.getLevel())
-                .bookmarked(null)
+                .bookmarked(BookmarkStatus.N)
+                .answered(AnsweredStatus.N)
                 .build();
     }
 }
