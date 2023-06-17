@@ -56,7 +56,7 @@ public class TranscriptionController {
     }
 
 
-    @ApiOperation(value = "더미 텍스트 데이터", notes = "더미 데이터")
+    @ApiOperation(value = "더미 데이터 - 내 답변 보기", notes = "더미 데이터")
     @ApiResponses({
             @io.swagger.annotations.ApiResponse(code = 20201, message = "질문 삭제 완료 (200)"),
     })
@@ -73,106 +73,173 @@ public class TranscriptionController {
 
     }
 
-    String dummyString = "{\n" +
-            "    \"jobName\": \"9165f727-0e99-4d25-9a9a-5ebd4a0ea494\",\n" +
-            "    \"accountId\": \"850775240476\",\n" +
+    String dummyString = " {\n" +
+            "    \"category\": \"IOS\",\n" +
+            "    \"date\": \"2023.06.18 일요일\",\n" +
+            "    \"url\": \"https://iterview-bucket.s3.ap-northeast-2.amazonaws.com/9fb02c54-29a5-437e-aaf0-25f7f2ae1b58/4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20230617T175600Z&X-Amz-SignedHeaders=host&X-Amz-Expires=599&X-Amz-Credential=AKIA4MFRH54OCAMCQVXR%2F20230617%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Signature=f2b334683e814e25149291fba4d3132dc8a6700ad54e5561eab49e0551fc36fe\",\n" +
+            "    \"length\": null,\n" +
             "    \"results\": {\n" +
             "      \"transcripts\": [\n" +
             "        {\n" +
-            "          \"transcript\": \"동해물과 백두산이 마르고 닳도록 하느님이 보호사 우리나라 만세\"\n" +
+            "          \"transcript\": \"포스트는 클라이언트에서 어버려 리소스를 생성 하거나 업데이트하기 위해 데이터를 보낼 때 사용되는 매소두다.\"\n" +
             "        }\n" +
             "      ],\n" +
             "      \"items\": [\n" +
             "        {\n" +
-            "          \"start_time\": \"1.13\",\n" +
-            "          \"end_time\": \"1.74\",\n" +
+            "          \"start_time\": \"0.06\",\n" +
+            "          \"end_time\": \"0.79\",\n" +
             "          \"alternatives\": [\n" +
             "            {\n" +
-            "              \"confidence\": \"0.9996\",\n" +
-            "              \"content\": \"동해물과\"\n" +
+            "              \"confidence\": \"0.944\",\n" +
+            "              \"content\": \"포스트는\"\n" +
             "            }\n" +
             "          ],\n" +
-            "          \"type\": \"pronunciation\"\n" +
+            "          \"type\": null\n" +
             "        },\n" +
             "        {\n" +
-            "          \"start_time\": \"1.74\",\n" +
-            "          \"end_time\": \"2.31\",\n" +
+            "          \"start_time\": \"0.79\",\n" +
+            "          \"end_time\": \"1.51\",\n" +
+            "          \"alternatives\": [\n" +
+            "            {\n" +
+            "              \"confidence\": \"0.9943\",\n" +
+            "              \"content\": \"클라이언트에서\"\n" +
+            "            }\n" +
+            "          ],\n" +
+            "          \"type\": null\n" +
+            "        },\n" +
+            "        {\n" +
+            "          \"start_time\": \"1.51\",\n" +
+            "          \"end_time\": \"2.05\",\n" +
+            "          \"alternatives\": [\n" +
+            "            {\n" +
+            "              \"confidence\": \"0.7460500000000001\",\n" +
+            "              \"content\": \"어버려\"\n" +
+            "            }\n" +
+            "          ],\n" +
+            "          \"type\": null\n" +
+            "        },\n" +
+            "        {\n" +
+            "          \"start_time\": \"2.08\",\n" +
+            "          \"end_time\": \"2.78\",\n" +
+            "          \"alternatives\": [\n" +
+            "            {\n" +
+            "              \"confidence\": \"0.9835\",\n" +
+            "              \"content\": \"리소스를\"\n" +
+            "            }\n" +
+            "          ],\n" +
+            "          \"type\": null\n" +
+            "        },\n" +
+            "        {\n" +
+            "          \"start_time\": \"2.78\",\n" +
+            "          \"end_time\": \"3.14\",\n" +
+            "          \"alternatives\": [\n" +
+            "            {\n" +
+            "              \"confidence\": \"0.7087\",\n" +
+            "              \"content\": \"생성\"\n" +
+            "            }\n" +
+            "          ],\n" +
+            "          \"type\": null\n" +
+            "        },\n" +
+            "        {\n" +
+            "          \"start_time\": \"3.14\",\n" +
+            "          \"end_time\": \"3.7\",\n" +
             "          \"alternatives\": [\n" +
             "            {\n" +
             "              \"confidence\": \"1.0\",\n" +
-            "              \"content\": \"백두산이\"\n" +
+            "              \"content\": \"하거나\"\n" +
             "            }\n" +
             "          ],\n" +
-            "          \"type\": \"pronunciation\"\n" +
+            "          \"type\": null\n" +
             "        },\n" +
             "        {\n" +
-            "          \"start_time\": \"2.31\",\n" +
-            "          \"end_time\": \"2.71\",\n" +
+            "          \"start_time\": \"3.73\",\n" +
+            "          \"end_time\": \"4.49\",\n" +
+            "          \"alternatives\": [\n" +
+            "            {\n" +
+            "              \"confidence\": \"0.85145\",\n" +
+            "              \"content\": \"업데이트하기\"\n" +
+            "            }\n" +
+            "          ],\n" +
+            "          \"type\": null\n" +
+            "        },\n" +
+            "        {\n" +
+            "          \"start_time\": \"4.49\",\n" +
+            "          \"end_time\": \"4.93\",\n" +
+            "          \"alternatives\": [\n" +
+            "            {\n" +
+            "              \"confidence\": \"0.9798\",\n" +
+            "              \"content\": \"위해\"\n" +
+            "            }\n" +
+            "          ],\n" +
+            "          \"type\": null\n" +
+            "        },\n" +
+            "        {\n" +
+            "          \"start_time\": \"4.94\",\n" +
+            "          \"end_time\": \"5.49\",\n" +
+            "          \"alternatives\": [\n" +
+            "            {\n" +
+            "              \"confidence\": \"0.9997\",\n" +
+            "              \"content\": \"데이터를\"\n" +
+            "            }\n" +
+            "          ],\n" +
+            "          \"type\": null\n" +
+            "        },\n" +
+            "        {\n" +
+            "          \"start_time\": \"5.49\",\n" +
+            "          \"end_time\": \"5.8\",\n" +
+            "          \"alternatives\": [\n" +
+            "            {\n" +
+            "              \"confidence\": \"0.987\",\n" +
+            "              \"content\": \"보낼\"\n" +
+            "            }\n" +
+            "          ],\n" +
+            "          \"type\": null\n" +
+            "        },\n" +
+            "        {\n" +
+            "          \"start_time\": \"5.8\",\n" +
+            "          \"end_time\": \"5.94\",\n" +
+            "          \"alternatives\": [\n" +
+            "            {\n" +
+            "              \"confidence\": \"0.9804\",\n" +
+            "              \"content\": \"때\"\n" +
+            "            }\n" +
+            "          ],\n" +
+            "          \"type\": null\n" +
+            "        },\n" +
+            "        {\n" +
+            "          \"start_time\": \"5.94\",\n" +
+            "          \"end_time\": \"6.45\",\n" +
             "          \"alternatives\": [\n" +
             "            {\n" +
             "              \"confidence\": \"1.0\",\n" +
-            "              \"content\": \"마르고\"\n" +
+            "              \"content\": \"사용되는\"\n" +
             "            }\n" +
             "          ],\n" +
-            "          \"type\": \"pronunciation\"\n" +
+            "          \"type\": null\n" +
             "        },\n" +
             "        {\n" +
-            "          \"start_time\": \"2.71\",\n" +
-            "          \"end_time\": \"3.46\",\n" +
+            "          \"start_time\": \"6.45\",\n" +
+            "          \"end_time\": \"7.05\",\n" +
             "          \"alternatives\": [\n" +
             "            {\n" +
-            "              \"confidence\": \"1.0\",\n" +
-            "              \"content\": \"닳도록\"\n" +
+            "              \"confidence\": \"0.730675\",\n" +
+            "              \"content\": \"매소두다\"\n" +
             "            }\n" +
             "          ],\n" +
-            "          \"type\": \"pronunciation\"\n" +
+            "          \"type\": null\n" +
             "        },\n" +
             "        {\n" +
-            "          \"start_time\": \"3.49\",\n" +
-            "          \"end_time\": \"4.24\",\n" +
+            "          \"start_time\": null,\n" +
+            "          \"end_time\": null,\n" +
             "          \"alternatives\": [\n" +
             "            {\n" +
-            "              \"confidence\": \"0.993\",\n" +
-            "              \"content\": \"하느님이\"\n" +
+            "              \"confidence\": \"0.0\",\n" +
+            "              \"content\": \".\"\n" +
             "            }\n" +
             "          ],\n" +
-            "          \"type\": \"pronunciation\"\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"start_time\": \"4.3\",\n" +
-            "          \"end_time\": \"5.03\",\n" +
-            "          \"alternatives\": [\n" +
-            "            {\n" +
-            "              \"confidence\": \"0.7063999999999999\",\n" +
-            "              \"content\": \"보호사\"\n" +
-            "            }\n" +
-            "          ],\n" +
-            "          \"type\": \"pronunciation\"\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"start_time\": \"5.06\",\n" +
-            "          \"end_time\": \"5.47\",\n" +
-            "          \"alternatives\": [\n" +
-            "            {\n" +
-            "              \"confidence\": \"0.9926\",\n" +
-            "              \"content\": \"우리나라\"\n" +
-            "            }\n" +
-            "          ],\n" +
-            "          \"type\": \"pronunciation\"\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"start_time\": \"5.47\",\n" +
-            "          \"end_time\": \"6.03\",\n" +
-            "          \"alternatives\": [\n" +
-            "            {\n" +
-            "              \"confidence\": \"0.8766\",\n" +
-            "              \"content\": \"만세\"\n" +
-            "            }\n" +
-            "          ],\n" +
-            "          \"type\": \"pronunciation\"\n" +
+            "          \"type\": null\n" +
             "        }\n" +
             "      ]\n" +
-            "    },\n" +
-            "    \"status\": \"COMPLETED\"\n" +
+            "    }\n" +
             "  }";
 }
