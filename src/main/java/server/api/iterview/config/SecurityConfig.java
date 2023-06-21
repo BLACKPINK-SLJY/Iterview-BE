@@ -50,6 +50,10 @@ public class SecurityConfig {
                                 config.setAllowedMethods(
                                         List.of("*")
                                 );
+                                config.setAllowedHeaders(
+                                        List.of("*")
+                                );
+
                                 return config;
                             };
                             c.configurationSource(source);
