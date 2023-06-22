@@ -248,4 +248,19 @@ public class QuestionService {
 
         return getQuestionDtosFromQuestions(questions, member);
     }
+
+    public List<QuestionDto> getRandomQuestions(String categoryString, Member member) {
+        try{
+            Category.valueOf(categoryString.toUpperCase());
+        }catch (IllegalArgumentException e){
+            throw new BizException(QuestionResponseType.INVALID_CATEGORY);
+        }
+
+        List<Question> questions = questionRepository.getRandom10QuestionsByCategory(categoryString.toUpperCase());
+
+        if(questions.isEmpty()){
+            return new ArrayList<>();
+        }
+        return getQuestionDtosFromQuestions(questions, member);
+    }
 }

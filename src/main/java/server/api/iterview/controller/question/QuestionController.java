@@ -181,4 +181,21 @@ public class QuestionController {
 
         return ApiResponse.of(QuestionResponseType.LIST_GET_SUCCESS, questionDtos);
     }
+
+    @ApiOperation(value = "랜덤 테스트에 들어갈 질문 10개 추출", notes = "추출!")
+    @ApiResponses({
+            @io.swagger.annotations.ApiResponse(code = 20202, message = "질문 리스트 추출 성공 (200)"),
+            @io.swagger.annotations.ApiResponse(code = 40200, message = "카테고리 쿼리가 유효하지 않음 (400)"),
+    })
+    @GetMapping("/question/random")
+    public ApiResponse<List<QuestionDto>> getRandomQuestions(
+            @RequestHeader(value = "Authorization") String token,
+            @Parameter(name = "category", description = "ios/aos/fe/be", in = QUERY) @RequestParam String category
+    ){
+        Member member = memberService.getMemberByToken(token);
+
+        List<QuestionDto> questionDtos = questionService.getRandomQuestions(category, member);
+
+        return ApiResponse.of(QuestionResponseType.LIST_GET_SUCCESS, questionDtos);
+    }
 }
