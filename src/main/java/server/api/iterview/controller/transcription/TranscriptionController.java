@@ -52,7 +52,7 @@ public class TranscriptionController {
         TranscriptionResponseDTO transcriptionResponse = transcriptionService.extractSpeechTextFromVideo(member, questionId);
         answerService.saveTranscription(transcriptionResponse, answer);
 
-        return ApiResponse.of(TranscribeResponseType.TRANSCRIBE_OK);
+        return ApiResponse.of(TranscribeResponseType.TRANSCRIBE_OK, transcriptionResponse);
     }
 
 

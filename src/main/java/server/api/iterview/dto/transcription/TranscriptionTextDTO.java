@@ -1,11 +1,13 @@
 package server.api.iterview.dto.transcription;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 @Data
+@NoArgsConstructor
 public class TranscriptionTextDTO implements Serializable {
     private static final long serialVersionUID = 1L;
     private String transcript;
