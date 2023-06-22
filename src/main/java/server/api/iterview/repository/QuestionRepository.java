@@ -55,4 +55,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             "on q.id = b.question.id " +
             "where b.member = :member and b.status = :status and q.category = :category")
     List<Question> getMyBookmarkedQuestionsByCategory(@Param("member") Member member, @Param("status") BookmarkStatus status, @Param("category") Category category);
+
+    @Query(nativeQuery = true, value = "select * from Question q where category = :category order by RAND() limit 10")
+    List<Question> getRandom10QuestionsByCategory(@Param("category") String category);
 }
