@@ -73,168 +73,58 @@ public class TranscriptionController {
 
     }
 
-    String dummyString = " {\n" +
+    String dummyString = "{\n" +
             "    \"category\": \"IOS\",\n" +
-            "    \"date\": \"2023.06.18 일요일\",\n" +
-            "    \"url\": \"https://iterview-bucket.s3.ap-northeast-2.amazonaws.com/9fb02c54-29a5-437e-aaf0-25f7f2ae1b58/4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20230617T175600Z&X-Amz-SignedHeaders=host&X-Amz-Expires=599&X-Amz-Credential=AKIA4MFRH54OCAMCQVXR%2F20230617%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Signature=f2b334683e814e25149291fba4d3132dc8a6700ad54e5561eab49e0551fc36fe\",\n" +
+            "    \"date\": \"2023.06.27 화요일\",\n" +
+            "    \"url\": \"https://iterview-bucket.s3.ap-northeast-2.amazonaws.com/9fb02c54-29a5-437e-aaf0-25f7f2ae1b58/5?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20230626T170430Z&X-Amz-SignedHeaders=host&X-Amz-Expires=599&X-Amz-Credential=AKIA4MFRH54OCAMCQVXR%2F20230626%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Signature=c7090a333f7ccdab2f81f91aa01674fa4d35d039befa429705af550e78a40df7\",\n" +
             "    \"length\": null,\n" +
             "    \"results\": {\n" +
             "      \"transcripts\": [\n" +
             "        {\n" +
-            "          \"transcript\": \"포스트는 클라이언트에서 어버려 리소스를 생성 하거나 업데이트하기 위해 데이터를 보낼 때 사용되는 매소두다.\"\n" +
+            "          \"transcript\": \"자세히 보아야 예쁘다. 오래 보아야 사랑스럽다. 너도 그렇다. 스프링은 잡아언어를 기반으로 한다.\"\n" +
             "        }\n" +
             "      ],\n" +
             "      \"items\": [\n" +
             "        {\n" +
-            "          \"start_time\": \"0.06\",\n" +
-            "          \"end_time\": \"0.79\",\n" +
+            "          \"start_time\": \"0.4\",\n" +
+            "          \"end_time\": \"1.68\",\n" +
             "          \"alternatives\": [\n" +
             "            {\n" +
-            "              \"confidence\": \"0.944\",\n" +
-            "              \"content\": \"포스트는\"\n" +
+            "              \"confidence\": null,\n" +
+            "              \"content\": \"자세히 보아야 예쁘다.\"\n" +
             "            }\n" +
             "          ],\n" +
             "          \"type\": null\n" +
             "        },\n" +
             "        {\n" +
-            "          \"start_time\": \"0.79\",\n" +
-            "          \"end_time\": \"1.51\",\n" +
+            "          \"start_time\": \"2.12\",\n" +
+            "          \"end_time\": \"3.61\",\n" +
             "          \"alternatives\": [\n" +
             "            {\n" +
-            "              \"confidence\": \"0.9943\",\n" +
-            "              \"content\": \"클라이언트에서\"\n" +
+            "              \"confidence\": null,\n" +
+            "              \"content\": \"오래 보아야 사랑스럽다.\"\n" +
             "            }\n" +
             "          ],\n" +
             "          \"type\": null\n" +
             "        },\n" +
             "        {\n" +
-            "          \"start_time\": \"1.51\",\n" +
-            "          \"end_time\": \"2.05\",\n" +
+            "          \"start_time\": \"4.03\",\n" +
+            "          \"end_time\": \"4.97\",\n" +
             "          \"alternatives\": [\n" +
             "            {\n" +
-            "              \"confidence\": \"0.7460500000000001\",\n" +
-            "              \"content\": \"어버려\"\n" +
+            "              \"confidence\": null,\n" +
+            "              \"content\": \"너도 그렇다.\"\n" +
             "            }\n" +
             "          ],\n" +
             "          \"type\": null\n" +
             "        },\n" +
             "        {\n" +
-            "          \"start_time\": \"2.08\",\n" +
-            "          \"end_time\": \"2.78\",\n" +
+            "          \"start_time\": \"5.37\",\n" +
+            "          \"end_time\": \"7.75\",\n" +
             "          \"alternatives\": [\n" +
             "            {\n" +
-            "              \"confidence\": \"0.9835\",\n" +
-            "              \"content\": \"리소스를\"\n" +
-            "            }\n" +
-            "          ],\n" +
-            "          \"type\": null\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"start_time\": \"2.78\",\n" +
-            "          \"end_time\": \"3.14\",\n" +
-            "          \"alternatives\": [\n" +
-            "            {\n" +
-            "              \"confidence\": \"0.7087\",\n" +
-            "              \"content\": \"생성\"\n" +
-            "            }\n" +
-            "          ],\n" +
-            "          \"type\": null\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"start_time\": \"3.14\",\n" +
-            "          \"end_time\": \"3.7\",\n" +
-            "          \"alternatives\": [\n" +
-            "            {\n" +
-            "              \"confidence\": \"1.0\",\n" +
-            "              \"content\": \"하거나\"\n" +
-            "            }\n" +
-            "          ],\n" +
-            "          \"type\": null\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"start_time\": \"3.73\",\n" +
-            "          \"end_time\": \"4.49\",\n" +
-            "          \"alternatives\": [\n" +
-            "            {\n" +
-            "              \"confidence\": \"0.85145\",\n" +
-            "              \"content\": \"업데이트하기\"\n" +
-            "            }\n" +
-            "          ],\n" +
-            "          \"type\": null\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"start_time\": \"4.49\",\n" +
-            "          \"end_time\": \"4.93\",\n" +
-            "          \"alternatives\": [\n" +
-            "            {\n" +
-            "              \"confidence\": \"0.9798\",\n" +
-            "              \"content\": \"위해\"\n" +
-            "            }\n" +
-            "          ],\n" +
-            "          \"type\": null\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"start_time\": \"4.94\",\n" +
-            "          \"end_time\": \"5.49\",\n" +
-            "          \"alternatives\": [\n" +
-            "            {\n" +
-            "              \"confidence\": \"0.9997\",\n" +
-            "              \"content\": \"데이터를\"\n" +
-            "            }\n" +
-            "          ],\n" +
-            "          \"type\": null\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"start_time\": \"5.49\",\n" +
-            "          \"end_time\": \"5.8\",\n" +
-            "          \"alternatives\": [\n" +
-            "            {\n" +
-            "              \"confidence\": \"0.987\",\n" +
-            "              \"content\": \"보낼\"\n" +
-            "            }\n" +
-            "          ],\n" +
-            "          \"type\": null\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"start_time\": \"5.8\",\n" +
-            "          \"end_time\": \"5.94\",\n" +
-            "          \"alternatives\": [\n" +
-            "            {\n" +
-            "              \"confidence\": \"0.9804\",\n" +
-            "              \"content\": \"때\"\n" +
-            "            }\n" +
-            "          ],\n" +
-            "          \"type\": null\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"start_time\": \"5.94\",\n" +
-            "          \"end_time\": \"6.45\",\n" +
-            "          \"alternatives\": [\n" +
-            "            {\n" +
-            "              \"confidence\": \"1.0\",\n" +
-            "              \"content\": \"사용되는\"\n" +
-            "            }\n" +
-            "          ],\n" +
-            "          \"type\": null\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"start_time\": \"6.45\",\n" +
-            "          \"end_time\": \"7.05\",\n" +
-            "          \"alternatives\": [\n" +
-            "            {\n" +
-            "              \"confidence\": \"0.730675\",\n" +
-            "              \"content\": \"매소두다\"\n" +
-            "            }\n" +
-            "          ],\n" +
-            "          \"type\": null\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"start_time\": null,\n" +
-            "          \"end_time\": null,\n" +
-            "          \"alternatives\": [\n" +
-            "            {\n" +
-            "              \"confidence\": \"0.0\",\n" +
-            "              \"content\": \".\"\n" +
+            "              \"confidence\": null,\n" +
+            "              \"content\": \"스프링은 잡아언어를 기반으로 한다.\"\n" +
             "            }\n" +
             "          ],\n" +
             "          \"type\": null\n" +

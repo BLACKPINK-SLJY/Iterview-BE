@@ -11,11 +11,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import server.api.iterview.dto.foo.FooDto;
+import server.api.iterview.dto.transcription.*;
 import server.api.iterview.response.BizException;
 import server.api.iterview.response.ApiResponse;
 import server.api.iterview.response.foo.FooResponseType;
 import server.api.iterview.service.foo.FooService;
 
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.*;
 
@@ -54,4 +58,48 @@ public class FooController {
         // 응답해줄 데이터가 있으면 create() 함수의 두번째 인자에 Dto를 담아준다.
         return ApiResponse.of(FooResponseType.FOO_CREATE_SUCCESS, fooDto);
     }
+
+    @GetMapping("/goo")
+    public ApiResponse<Object> getGoo(){
+        return ApiResponse.of(FooResponseType.FOO_CREATE_SUCCESS, getData());
+    }
+
+    public TranscriptionResponseDTO getData(){
+        TranscriptionResponseDTO responseDTO = new TranscriptionResponseDTO();
+
+        List<TranscriptionTextDTO> textDTOS = List.of(new TranscriptionTextDTO("자세히 보아야 예쁘다. 오래 보아야 사랑스럽다. 너도 그렇다. 스프링은 잡아언어를 기반으로 한다."));
+        List<TranscriptionItemDTO> itemDTOS = new ArrayList<>();
+
+        List<Double> startTimes = List.of(0.4, 0.84, 1.2, 0.0, 2.12, 2.37, 2.78, 0.0, 4.03, 4.41, 0.0, 5.37, 6.19, 6.94, 7.36, 0.0);
+        List<Double> endTimes   = List.of(0.84, 1.2, 1.68, 0.0, 2.37, 2.78, 3.61, 0.0, 4.41, 4.97, 0.0, 6.07, 6.94, 7.36, 7.75, 0.0);
+        List<String> contents = List.of("자세히", "보아야", "예쁘다", ".", "오래", "보아야", "사랑스럽다", ".", "너도", "그렇다", ".", "스프링은", "잡아언어를", "기반으로", "한다", ".");
+        List<Double> confidences = List.of(1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.9951, 0.0, 0.9859, 0.76635, 1.0, 0.9926, 0.0);
+
+        for(int i=0; i<16; i++){
+            List<TranscriptionItemAlternativesDTO> alternativesDTOS = new ArrayList<>();
+            TranscriptionItemAlternativesDTO alternativesDTO = TranscriptionItemAlternativesDTO.builder()
+                        .content(contents.get(i))
+                        .confidence(confidences.get(i).toString())
+                        .build();
+            alternativesDTOS.add(alternativesDTO);
+
+
+            TranscriptionItemDTO itemDTO = TranscriptionItemDTO.builder()
+                    .start_time(startTimes.get(i).toString())
+                    .end_time(endTimes.get(i).toString())
+                    .alternatives(alternativesDTOS)
+                    .build();
+
+            itemDTOS.add(itemDTO);
+        }
+
+        TranscriptionResultDTO resultDTO = TranscriptionResultDTO.builder()
+                .transcripts(textDTOS)
+                .items(itemDTOS)
+                .build();
+
+        responseDTO.setResults(resultDTO);
+        return responseDTO;
+    }
+
 }

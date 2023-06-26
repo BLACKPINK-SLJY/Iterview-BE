@@ -82,12 +82,50 @@ public class AnswerService {
         }
     }
 
+    /**
+     * Amazon Transcribe API로부터, 토큰별로 나뉘어서 온 아이템들을 문장으로 묶어 DB에 저장.
+     */
+    public void saveFragmentsBySentence(List<TranscriptionItemDTO> items, Answer answer){
+        Boolean endFlag = true;
+        String sentence = "";
+        String startTime = "";
+        String endTime = "";
+        for(TranscriptionItemDTO item : items){
+            String content = "";
+            for(TranscriptionItemAlternativesDTO alternativesDTO : item.getAlternatives()){
+                content += alternativesDTO.getContent();
+            }
+            sentence += content + " ";
+
+            if(endFlag){
+                startTime = item.getStart_time();
+                endFlag = false;
+            }
+
+            if(content.equals(".")){
+                sentence = sentence.replace(" . ", ".");
+                endFlag = true;
+
+                transcriptionRepository.save(Transcription.builder()
+                                .startTime(startTime)
+                                .endTime(endTime)
+                                .content(sentence)
+                                .answer(answer)
+                                .build());
+
+                sentence = "";
+            }
+
+            endTime = item.getEnd_time();
+        }
+    }
+
     public void saveTranscription(TranscriptionResponseDTO transcriptionResponse, Answer answer) {
         transcriptionRepository.deleteAll(transcriptionRepository.findByAnswer(answer));
 
         TranscriptionResultDTO results = transcriptionResponse.getResults();
         saveTranscriptionOnAnswer(results, answer);
-        saveTranscriptionFragments(results.getItems(), answer);
+        saveFragmentsBySentence(results.getItems(), answer);
 
         answer.setTranscriptStatus(TranscriptStatus.Y);
     }
@@ -132,7 +170,7 @@ public class AnswerService {
         return date.format(formatter).concat(getDayOfWeek(date.getDayOfWeek().getValue()));
     }
 
-    public String getDayOfWeek(Integer day){
+    private String getDayOfWeek(Integer day){
         switch (day){
             case 1:
                 return "월요일";
