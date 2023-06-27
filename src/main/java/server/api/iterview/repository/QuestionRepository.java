@@ -17,10 +17,10 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findByCategory(Category category);
 
     @Query(nativeQuery = true,
-            value = "select * from Question q " +
-                    "inner join QUESTION_TAG qt " +
+            value = "select * from question q " +
+                    "inner join question_tag qt " +
                     "on q.question_id = qt.question_id " +
-                    "inner join Tag t " +
+                    "inner join tag t " +
                     "on qt.tag_id = t.tag_id " +
                     "where LOWER(q.content) like LOWER(concat('%', :word, '%')) or LOWER(t.name) like LOWER(concat('%', :word, '%')) " +
                     "order by q.question_id"
@@ -56,6 +56,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             "where b.member = :member and b.status = :status and q.category = :category")
     List<Question> getMyBookmarkedQuestionsByCategory(@Param("member") Member member, @Param("status") BookmarkStatus status, @Param("category") Category category);
 
-    @Query(nativeQuery = true, value = "select * from Question q where category = :category order by RAND() limit 10")
+    @Query(nativeQuery = true, value = "select * from question q where category = :category order by RAND() limit 10")
     List<Question> getRandom10QuestionsByCategory(@Param("category") String category);
 }
