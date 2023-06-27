@@ -189,10 +189,10 @@ public class QuestionController {
     })
     @GetMapping("/question/random")
     public ApiResponse<List<QuestionDto>> getRandomQuestions(
-            @RequestHeader(value = "Authorization") String token,
+            @RequestHeader(value = "Authorization", required = false) String token,
             @Parameter(name = "category", description = "ios/aos/fe/be", in = QUERY) @RequestParam String category
     ){
-        Member member = memberService.getMemberByToken(token);
+        Member member = (token != null) ? memberService.getMemberByToken(token) : null;
 
         List<QuestionDto> questionDtos = questionService.getRandomQuestions(category, member);
 
