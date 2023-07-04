@@ -24,6 +24,7 @@ import server.api.iterview.response.question.QuestionResponseType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -148,8 +149,9 @@ public class QuestionService {
 
     @Transactional
     public List<QuestionDto> getSearchResults(String word, Member member) {
+        List<Question> searchResults = new ArrayList<>(questionRepository.getSearchResults(word).stream().distinct().collect(Collectors.toList()));
 
-        return this.getQuestionDtosFromQuestions(questionRepository.getSearchResults(word), member);
+        return this.getQuestionDtosFromQuestions(searchResults, member);
     }
 
     public List<QuestionDto> getAllQuestionsOrderByLevel(Member member) {
