@@ -20,7 +20,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             value = "select * from question q " +
                     "inner join question_tag qt " +
                     "on q.question_id = qt.question_id " +
-                    "inner join tag t " +
+                    "left join tag t " +
                     "on qt.tag_id = t.tag_id " +
                     "where LOWER(q.content) like LOWER(concat('%', :word, '%')) or LOWER(t.name) like LOWER(concat('%', :word, '%')) " +
                     "order by q.question_id"
