@@ -14,6 +14,7 @@ import server.api.iterview.domain.member.Member;
 import server.api.iterview.domain.question.Question;
 import server.api.iterview.dto.amazonS3.PresignedUrlResponseDto;
 import server.api.iterview.dto.answer.AnswerReportResponseDto;
+import server.api.iterview.dto.answer.AnswerVideoResponseDto;
 import server.api.iterview.response.ApiResponse;
 import server.api.iterview.response.amazonS3.AmazonS3ResponseType;
 import server.api.iterview.response.answer.AnswerResponseType;
@@ -91,9 +92,8 @@ public class AnswerController {
         Member member = memberService.getMemberByToken(token);
         Answer answer = answerService.findAnswerByMemberAndQuestionId(member, questionId);
         Question question = questionService.findById(questionId);
-        String preSignedUrl = amazonS3Service.getPresignedUrl(member, questionId);
 
-        AnswerReportResponseDto response = answerService.getAnswerResponse(member, question, answer, preSignedUrl);
+        AnswerReportResponseDto response = answerService.getAnswerResponse(member, question, answer);
 
         return ApiResponse.of(AnswerResponseType.MY_ANSWER_SUCCESS, response);
     }
@@ -103,10 +103,18 @@ public class AnswerController {
             @io.swagger.annotations.ApiResponse(code = 20502, message = "내 답변 보기 응답 성공 (200)"),
     })
     @GetMapping("/answer/replay")
-    public void f(
+    public ApiResponse<Object> replayAnswer(
             @Parameter(name = "Authorization", description = "Bearer {accessToken}", in = HEADER) @RequestHeader(name = "Authorization") String token,
             @RequestParam Long questionId
     ){
+        Member member = memberService.getMemberByToken(token);
+        Answer answer = answerService.findAnswerByMemberAndQuestionId(member, questionId);
+        Question question = questionService.findById(questionId);
 
+        String preSignedUrl = amazonS3Service.getPresignedUrl(member, questionId);
+
+        AnswerVideoResponseDto response = answerService.getReplayAnswerResponse(member, question, answer, preSignedUrl);
+
+        return ApiResponse.of(AnswerResponseType.MY_ANSWER_SUCCESS, response);
     }
 }

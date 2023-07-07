@@ -14,6 +14,7 @@ import server.api.iterview.domain.question.Question;
 import server.api.iterview.domain.question.Tag;
 import server.api.iterview.domain.transcription.Transcription;
 import server.api.iterview.dto.answer.AnswerReportResponseDto;
+import server.api.iterview.dto.answer.AnswerVideoResponseDto;
 import server.api.iterview.dto.transcription.*;
 import server.api.iterview.repository.AnswerRepository;
 import server.api.iterview.repository.BookmarkRepository;
@@ -140,7 +141,7 @@ public class AnswerService {
     }
 
     @Transactional(readOnly = true)
-    public AnswerReportResponseDto getAnswerResponse(Member member, Question question, Answer answer, String preSignedUrl) {
+    public AnswerReportResponseDto getAnswerResponse(Member member, Question question, Answer answer) {
         Bookmark bookmark = bookmarkRepository.findByMemberAndQuestion(member, question)
                         .orElse(null);
 
@@ -169,6 +170,30 @@ public class AnswerService {
     @Async
     public void extractTextAndSave(Member member, Long questionId, Answer answer) {
         saveTranscription(transcriptionService.extractSpeechTextFromVideo(member, questionId), answer);
+    }
+
+    /**
+     * 내 녹화 영상 보러가기
+     */
+    public AnswerVideoResponseDto getReplayAnswerResponse(Member member, Question question, Answer answer, String preSignedUrl) {
+        Bookmark bookmark = bookmarkRepository.findByMemberAndQuestion(member, question)
+                .orElse(null);
+
+        return AnswerVideoResponseDto.builder()
+                .questionId(question.getId())
+                .question(question.getContent())
+                .level(question.getLevel())
+                .tags(question.getTags().stream().map(Tag::getName).collect(Collectors.toList()))
+                .bookmarked(bookmark != null ? bookmark.getStatus() : BookmarkStatus.N)
+
+                .category(question.getCategory().getCategory())
+                .date(getFormattedAnswerDate(answer.getModifiedDate()))
+
+                .url(preSignedUrl)
+                .results(getTranscriptionResult(answer))
+
+                .creating(answer.getTranscriptStatus())
+                .build();
     }
 
     public TranscriptionResultDTO getTranscriptionResult(Answer answer){
