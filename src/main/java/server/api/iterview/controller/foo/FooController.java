@@ -102,4 +102,9 @@ public class FooController {
         return responseDTO;
     }
 
+    @GetMapping("/async")
+    public String asyncTest(){
+        fooService.testAsync();
+        return "async 성공";
+    }
 }

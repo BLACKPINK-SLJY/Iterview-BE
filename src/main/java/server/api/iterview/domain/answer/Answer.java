@@ -38,6 +38,13 @@ public class Answer extends BaseTimeEntity {
     private List<Transcription> transcriptions;
 
     private String content;
+    private Integer score;
+
+    @Column(length = 1000)
+    private String feedback;
+
+    @Column(length = 1000)
+    private String bestAnswer;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default

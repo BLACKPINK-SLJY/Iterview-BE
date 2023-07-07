@@ -2,24 +2,31 @@ package server.api.iterview.service.answer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import server.api.iterview.domain.answer.Answer;
 import server.api.iterview.domain.answer.TranscriptStatus;
+import server.api.iterview.domain.bookmark.Bookmark;
+import server.api.iterview.domain.bookmark.BookmarkStatus;
 import server.api.iterview.domain.member.Member;
 import server.api.iterview.domain.question.Question;
+import server.api.iterview.domain.question.Tag;
 import server.api.iterview.domain.transcription.Transcription;
-import server.api.iterview.dto.answer.AnswerResponseDto;
+import server.api.iterview.dto.answer.AnswerReportResponseDto;
 import server.api.iterview.dto.transcription.*;
 import server.api.iterview.repository.AnswerRepository;
+import server.api.iterview.repository.BookmarkRepository;
 import server.api.iterview.repository.TranscriptionRepository;
 import server.api.iterview.response.BizException;
 import server.api.iterview.response.answer.AnswerResponseType;
+import server.api.iterview.service.transcribe.TranscriptionService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -29,6 +36,8 @@ import java.util.List;
 public class AnswerService {
     private final AnswerRepository answerRepository;
     private final TranscriptionRepository transcriptionRepository;
+    private final BookmarkRepository bookmarkRepository;
+    private final TranscriptionService transcriptionService;
 
     @Transactional(readOnly = true)
     public Answer findAnswerByMemberAndQuestionId(Member member, Long questionId){
@@ -131,14 +140,35 @@ public class AnswerService {
     }
 
     @Transactional(readOnly = true)
-    public AnswerResponseDto getAnswerResponse(Question question, Answer answer, String preSignedUrl) {
+    public AnswerReportResponseDto getAnswerResponse(Member member, Question question, Answer answer, String preSignedUrl) {
+        Bookmark bookmark = bookmarkRepository.findByMemberAndQuestion(member, question)
+                        .orElse(null);
 
-        return AnswerResponseDto.builder()
-                .category(question.getCategory().name())
-                .date(getFormattedAnswerDate(answer.getModifiedDate()))
-                .url(preSignedUrl)
-                .results(getTranscriptionResult(answer))
+        return AnswerReportResponseDto.builder()
+                .questionId(question.getId())
+                .question(question.getContent())
+                .level(question.getLevel())
+                .tags(question.getTags().stream().map(Tag::getName).collect(Collectors.toList()))
+                .bookmarked(bookmark != null ? bookmark.getStatus() : BookmarkStatus.N)
+
+                .transcription(answer.getContent())
+
+                .score(answer.getScore())
+                .feedback(answer.getFeedback())
+                .bestAnswer(answer.getBestAnswer())
+
+                .creating(answer.getTranscriptStatus())
                 .build();
+    }
+
+    /**
+     * S3에 저장된 비디오를 가지고 STT 작업 수행.
+     * 응답 받은 데이터를 데이터베이스에 저장.
+     * STT 작업이 오래 걸리기 때문에 비동기 처리
+     */
+    @Async
+    public void extractTextAndSave(Member member, Long questionId, Answer answer) {
+        saveTranscription(transcriptionService.extractSpeechTextFromVideo(member, questionId), answer);
     }
 
     public TranscriptionResultDTO getTranscriptionResult(Answer answer){

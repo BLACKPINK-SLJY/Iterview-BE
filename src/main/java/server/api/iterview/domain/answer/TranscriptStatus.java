@@ -6,8 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum TranscriptStatus {
-    Y("Y"),
-    N("N"),
+    Y("YES"),
+    N("NO"),
     ;
 
     private final String status;

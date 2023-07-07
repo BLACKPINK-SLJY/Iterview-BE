@@ -27,12 +27,11 @@ import static io.swagger.v3.oas.annotations.enums.ParameterIn.HEADER;
 public class TranscriptionController {
 
     private final MemberService memberService;
-    private final TranscriptionService transcriptionService;
     private final AnswerService answerService;
 
     @ApiOperation(value = "영상에서 텍스트 추출", notes = "AWS Transcribe API를 이용하여 영상에서 텍스트 추출 작업 실행")
     @ApiResponses({
-            @io.swagger.annotations.ApiResponse(code = 20401, message = "transcribe 성공 (200)"),
+            @io.swagger.annotations.ApiResponse(code = 20402, message = "Speech Text 추출 진행 시작"),
             @io.swagger.annotations.ApiResponse(code = 40501, message = "해당 유저에 대한 답변 데이타가 없음 (404)"),
             @io.swagger.annotations.ApiResponse(code = 40401, message = "transcribe 실패 (500)"),
             @io.swagger.annotations.ApiResponse(code = 40402, message = "이미 텍스트 추출된 영상입니다 (200)"),
@@ -49,10 +48,10 @@ public class TranscriptionController {
             return ApiResponse.of(TranscribeResponseType.ALREADY_TRANSCRIBED);
         }
 
-        TranscriptionResponseDTO transcriptionResponse = transcriptionService.extractSpeechTextFromVideo(member, questionId);
-        answerService.saveTranscription(transcriptionResponse, answer);
+        // 해당 함수 비동기
+        answerService.extractTextAndSave(member, questionId, answer);
 
-        return ApiResponse.of(TranscribeResponseType.TRANSCRIBE_OK, transcriptionResponse);
+        return ApiResponse.of(TranscribeResponseType.TRANSCRIBE_ING);
     }
 
 

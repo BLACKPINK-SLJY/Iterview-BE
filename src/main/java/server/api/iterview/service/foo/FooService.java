@@ -2,6 +2,7 @@ package server.api.iterview.service.foo;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import server.api.iterview.domain.foo.Foo;
@@ -32,5 +33,18 @@ public class FooService {
                 .name(foo.getName())
                 .title(foo.getTitle())
                 .build();
+    }
+
+    @Async
+    public void testAsync() {
+        try {
+            System.out.println("testAsync() 함수 시작");
+            Thread.sleep(5 * 1000);
+            System.out.println("testAsync() 함수 진행 중");
+            Thread.sleep(3 * 1000);
+            System.out.println("testAsync() 함수 끝");
+        }catch (Exception e){
+            return;
+        }
     }
 }
