@@ -181,9 +181,18 @@ public class AnswerService {
      */
     @Async
     public void extractTextAndSave(Member member, Long questionId, Answer answer) {
-        TranscriptionResponseDTO responseDTO = transcriptionService.extractSpeechTextFromVideo(member, questionId);
-        System.out.println("========" + responseDTO.getResults().getTranscripts().get(0).getTranscript());
-        saveTranscription(responseDTO, answer);
+        // Transcribe 돌리고 있다는 뜻으로 ING로 변경
+        answer.setTranscriptStatus(TranscriptStatus.ING);
+        answerRepository.save(answer);
+
+        try {
+            TranscriptionResponseDTO responseDTO = transcriptionService.extractSpeechTextFromVideo(member, questionId);
+            saveTranscription(responseDTO, answer);
+        }catch (Exception e){
+            // 텍스트 추출 작업 중 에러가 발생하였을 경우 Transcription Status를 N으로 저장
+            answer.setTranscriptStatus(TranscriptStatus.N);
+            answerRepository.save(answer);
+        }
     }
 
     /**

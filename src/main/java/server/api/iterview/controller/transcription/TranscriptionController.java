@@ -35,6 +35,7 @@ public class TranscriptionController {
             @io.swagger.annotations.ApiResponse(code = 40501, message = "해당 유저에 대한 답변 데이타가 없음 (404)"),
             @io.swagger.annotations.ApiResponse(code = 40401, message = "transcribe 실패 (500)"),
             @io.swagger.annotations.ApiResponse(code = 40402, message = "이미 텍스트 추출된 영상입니다 (200)"),
+            @io.swagger.annotations.ApiResponse(code = 40403, message = "텍스트 추출이 아직 진행 중입니다. (200)"),
     })
     @GetMapping("/transcription")
     public ApiResponse<Object> createTranscription(
@@ -46,6 +47,8 @@ public class TranscriptionController {
 
         if(answer.getTranscriptStatus() == TranscriptStatus.Y){
             return ApiResponse.of(TranscribeResponseType.ALREADY_TRANSCRIBED);
+        }else if(answer.getTranscriptStatus() == TranscriptStatus.ING){
+            return ApiResponse.of(TranscribeResponseType.ING_TRANSCRIBE);
         }
 
         // 해당 함수 비동기

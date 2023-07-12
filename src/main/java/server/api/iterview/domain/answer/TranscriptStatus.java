@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum TranscriptStatus {
     Y("YES"),
     N("NO"),
+    ING("ING"),
     ;
 
     private final String status;
