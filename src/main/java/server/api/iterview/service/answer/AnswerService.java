@@ -70,6 +70,7 @@ public class AnswerService {
         }
 
         answer.setContent(transcription);
+        answerRepository.save(answer);
     }
 
     public void saveTranscriptionFragments(List<TranscriptionItemDTO> items, Answer answer){
@@ -96,6 +97,7 @@ public class AnswerService {
      * Amazon Transcribe API로부터, 토큰별로 나뉘어서 온 아이템들을 문장으로 묶어 DB에 저장.
      */
     public void saveFragmentsBySentence(List<TranscriptionItemDTO> items, Answer answer){
+        System.out.println("=====" + items.get(0).getAlternatives().get(0).getContent());
         Boolean endFlag = true;
         String sentence = "";
         String startTime = "";
@@ -128,6 +130,15 @@ public class AnswerService {
 
             endTime = item.getEnd_time();
         }
+
+        if(!endFlag){
+            transcriptionRepository.save(Transcription.builder()
+                            .startTime(startTime)
+                            .endTime(endTime)
+                            .content(sentence)
+                            .answer(answer)
+                    .build());
+        }
     }
 
     public void saveTranscription(TranscriptionResponseDTO transcriptionResponse, Answer answer) {
@@ -138,6 +149,7 @@ public class AnswerService {
         saveFragmentsBySentence(results.getItems(), answer);
 
         answer.setTranscriptStatus(TranscriptStatus.Y);
+        answerRepository.save(answer);
     }
 
     @Transactional(readOnly = true)
@@ -169,7 +181,9 @@ public class AnswerService {
      */
     @Async
     public void extractTextAndSave(Member member, Long questionId, Answer answer) {
-        saveTranscription(transcriptionService.extractSpeechTextFromVideo(member, questionId), answer);
+        TranscriptionResponseDTO responseDTO = transcriptionService.extractSpeechTextFromVideo(member, questionId);
+        System.out.println("========" + responseDTO.getResults().getTranscripts().get(0).getTranscript());
+        saveTranscription(responseDTO, answer);
     }
 
     /**
