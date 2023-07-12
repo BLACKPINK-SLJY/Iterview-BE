@@ -170,7 +170,7 @@ public class AnswerService {
                 .feedback(answer.getFeedback())
                 .bestAnswer(answer.getBestAnswer())
 
-                .creating(answer.getTranscriptStatus())
+                .created(answer.getTranscriptStatus())
                 .build();
     }
 
@@ -215,7 +215,7 @@ public class AnswerService {
                 .url(preSignedUrl)
                 .results(getTranscriptionResult(answer))
 
-                .creating(answer.getTranscriptStatus())
+                .created(answer.getTranscriptStatus())
                 .build();
     }
 

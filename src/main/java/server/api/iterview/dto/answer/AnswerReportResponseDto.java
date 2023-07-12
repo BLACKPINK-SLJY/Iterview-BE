@@ -24,5 +24,5 @@ public class AnswerReportResponseDto {
     private String feedback;
     private String bestAnswer;
 
-    private TranscriptStatus creating;
+    private TranscriptStatus created;
 }

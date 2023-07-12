@@ -26,5 +26,5 @@ public class AnswerVideoResponseDto {
     private String length;
     private TranscriptionResultDTO results;
 
-    private TranscriptStatus creating;
+    private TranscriptStatus created;
 }
