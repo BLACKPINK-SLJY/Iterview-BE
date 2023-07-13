@@ -85,7 +85,7 @@ public class AnswerController {
             @io.swagger.annotations.ApiResponse(code = 40301, message = "presigned-url 발급에 실패하였습니다. (500)"),
     })
     @GetMapping("/answer")
-    public ApiResponse<Object> getMyAnswer(
+    public ApiResponse<AnswerReportResponseDto> getMyAnswer(
             @Parameter(name = "Authorization", description = "Bearer {accessToken}", in = HEADER) @RequestHeader(name = "Authorization") String token,
             @RequestParam Long questionId
     ){
@@ -103,7 +103,7 @@ public class AnswerController {
             @io.swagger.annotations.ApiResponse(code = 20502, message = "내 답변 보기 응답 성공 (200)"),
     })
     @GetMapping("/answer/replay")
-    public ApiResponse<Object> replayAnswer(
+    public ApiResponse<AnswerVideoResponseDto> replayAnswer(
             @Parameter(name = "Authorization", description = "Bearer {accessToken}", in = HEADER) @RequestHeader(name = "Authorization") String token,
             @RequestParam Long questionId
     ){

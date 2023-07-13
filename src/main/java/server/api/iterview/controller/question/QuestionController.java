@@ -51,7 +51,7 @@ public class QuestionController {
             @io.swagger.annotations.ApiResponse(code = 20201, message = "질문 삭제 완료 (200)"),
     })
     @DeleteMapping("/question")
-    public ApiResponse<String> deleteQuestion(
+    public ApiResponse<Object> deleteQuestion(
             @Parameter(name = "id", description = "질문 id (Question ID)", in = QUERY) @RequestParam Long id
     ){
         questionService.deleteQuestion(id);
