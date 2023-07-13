@@ -47,4 +47,16 @@ public class FooService {
             return;
         }
     }
+
+    public void testAOP(String result) {
+        try {
+            System.out.println("testAOP() 함수 시작" + result);
+            Thread.sleep(5 * 1000);
+            System.out.println("testAOP() 함수 진행 중"+ result);
+            Thread.sleep(3 * 1000);
+            System.out.println("testAOP() 함수 끝"+ result);
+        }catch (Exception e){
+            return;
+        }
+    }
 }

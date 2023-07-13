@@ -1,9 +1,6 @@
 package server.api.iterview.domain.answer;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import server.api.iterview.domain.BaseTimeEntity;
 import server.api.iterview.domain.member.Member;
 import server.api.iterview.domain.question.Question;
@@ -18,6 +15,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
@@ -30,7 +28,7 @@ public class Answer extends BaseTimeEntity {
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "QUESTION_ID")
     private Question question;
 
@@ -54,11 +52,4 @@ public class Answer extends BaseTimeEntity {
         super.setModifiedDate(LocalDateTime.now());
     }
 
-    public void setContent(String content){
-        this.content = content;
-    }
-
-    public void setTranscriptStatus(TranscriptStatus status){
-        this.transcriptStatus = status;
-    }
 }
