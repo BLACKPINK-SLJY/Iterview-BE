@@ -52,4 +52,13 @@ public class Answer extends BaseTimeEntity {
         super.setModifiedDate(LocalDateTime.now());
     }
 
+    public void deleteContents(){
+        super.setModifiedDate(LocalDateTime.now());
+        this.transcriptStatus = TranscriptStatus.N;
+        this.content = null;
+        this.bestAnswer = null;
+        this.feedback = null;
+        this.score = 0;
+    }
+
 }

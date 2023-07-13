@@ -52,7 +52,7 @@ public class AnswerService {
         Answer answer = answerRepository.findByMemberAndQuestion(member, question)
                 .orElse(null);
 
-        if(answer == null){
+        if (answer == null) {
             answerRepository.save(
                     Answer.builder().member(member).question(question).build()
             );
@@ -60,9 +60,7 @@ public class AnswerService {
         }
 
         transcriptionRepository.deleteAll(transcriptionRepository.findByAnswer(answer));
-        answer.updateModifiedDate();
-        answer.setTranscriptStatus(TranscriptStatus.N);
-        answer.setContent(null);
+        answer.deleteContents();
     }
 
     public void saveTranscriptionFragments(List<TranscriptionItemDTO> items, Answer answer){
@@ -88,14 +86,15 @@ public class AnswerService {
     /**
      * Amazon Transcribe API로부터, 토큰별로 나뉘어서 온 아이템들을 문장으로 묶어 DB에 저장.
      */
-    public void saveFragmentsBySentence(List<TranscriptionItemDTO> items, Answer answer){
+    public String saveFragmentsBySentence(List<TranscriptionItemDTO> items, Answer answer){
         Boolean wrong = false;
         Boolean endFlag = true;
-        String sentence = "";
+        StringBuilder sentence = new StringBuilder();
         String startTime = "";
         String endTime = "";
+        StringBuilder entireContent = new StringBuilder();
         for(TranscriptionItemDTO item : items){
-            String content = "";
+            StringBuilder content = new StringBuilder();
             for(TranscriptionItemAlternativesDTO alternativesDTO : item.getAlternatives()){
                 Double confidence = Double.parseDouble(alternativesDTO.getConfidence());
                 if(confidence <= 0.80 && !alternativesDTO.getContent().equals(".") && !alternativesDTO.getContent().equals(",")){
@@ -103,32 +102,33 @@ public class AnswerService {
                 }
 
                 if(!wrong){
-                    content += alternativesDTO.getContent();
+                    content.append(alternativesDTO.getContent());
                 }else{
-                    content += "@@" + alternativesDTO.getContent() + "@@";
+                    content.append("@@").append(alternativesDTO.getContent()).append("@@");
                     wrong = false;
                 }
 
             }
-            sentence += content + " ";
+            sentence.append(content).append(" ");
 
             if(endFlag){
                 startTime = item.getStart_time();
                 endFlag = false;
             }
 
-            if(content.equals(".")){
-                sentence = sentence.replace(" . ", ".");
+            if(content.toString().equals(".")){
+                String sentenceString = sentence.toString().replace(" . ", ". ");
                 endFlag = true;
 
                 transcriptionRepository.save(Transcription.builder()
                                 .startTime(startTime)
                                 .endTime(endTime)
-                                .content(sentence)
+                                .content(sentenceString)
                                 .answer(answer)
                                 .build());
 
-                sentence = "";
+                entireContent.append(sentenceString);
+                sentence.setLength(0);
             }
 
             endTime = item.getEnd_time();
@@ -138,24 +138,28 @@ public class AnswerService {
             transcriptionRepository.save(Transcription.builder()
                             .startTime(startTime)
                             .endTime(endTime)
-                            .content(sentence)
+                            .content(sentence.toString())
                             .answer(answer)
                     .build());
+
+            entireContent.append(sentence);
         }
+
+        return entireContent.toString();
     }
 
     public Answer saveTranscription(TranscriptionResponseDTO transcriptionResponse, Answer answer) {
         transcriptionRepository.deleteAll(transcriptionRepository.findByAnswer(answer));
 
-        TranscriptionResultDTO results = transcriptionResponse.getResults();
+//        TranscriptionResultDTO results = transcriptionResponse.getResults();
 
-        String transcription = "";
-        for(TranscriptionTextDTO transcriptionTextDto : results.getTranscripts()){
-            transcription = transcription.concat(transcriptionTextDto.getTranscript());
-        }
-
-        answer.setContent(transcription);
-        saveFragmentsBySentence(results.getItems(), answer);
+//        String transcription = "";
+//        for(TranscriptionTextDTO transcriptionTextDto : results.getTranscripts()){
+//            transcription = transcription.concat(transcriptionTextDto.getTranscript());
+//        }
+//
+//        answer.setContent(transcription);
+        answer.setContent(saveFragmentsBySentence(transcriptionResponse.getResults().getItems(), answer));
 
         return answerRepository.save(answer);
     }
