@@ -97,7 +97,7 @@ public class AnswerService {
      * Amazon Transcribe API로부터, 토큰별로 나뉘어서 온 아이템들을 문장으로 묶어 DB에 저장.
      */
     public void saveFragmentsBySentence(List<TranscriptionItemDTO> items, Answer answer){
-        System.out.println("=====" + items.get(0).getAlternatives().get(0).getContent());
+        Boolean wrong = false;
         Boolean endFlag = true;
         String sentence = "";
         String startTime = "";
@@ -105,7 +105,18 @@ public class AnswerService {
         for(TranscriptionItemDTO item : items){
             String content = "";
             for(TranscriptionItemAlternativesDTO alternativesDTO : item.getAlternatives()){
-                content += alternativesDTO.getContent();
+                Double confidence = Double.parseDouble(alternativesDTO.getConfidence());
+                if(confidence <= 0.80 && !alternativesDTO.getContent().equals(".") && !alternativesDTO.getContent().equals(",")){
+                    wrong = true;
+                }
+
+                if(!wrong){
+                    content += alternativesDTO.getContent();
+                }else{
+                    content += "@@" + alternativesDTO.getContent() + "@@";
+                    wrong = false;
+                }
+
             }
             sentence += content + " ";
 
