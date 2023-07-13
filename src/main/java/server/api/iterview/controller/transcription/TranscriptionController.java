@@ -10,14 +10,12 @@ import org.springframework.web.bind.annotation.*;
 import server.api.iterview.domain.answer.Answer;
 import server.api.iterview.domain.answer.TranscriptStatus;
 import server.api.iterview.domain.member.Member;
-import server.api.iterview.dto.transcription.TranscriptionResponseDTO;
 import server.api.iterview.response.ApiResponse;
 import server.api.iterview.response.BizException;
 import server.api.iterview.response.InternalServerExceptionType;
 import server.api.iterview.response.transcribe.TranscribeResponseType;
 import server.api.iterview.service.answer.AnswerService;
 import server.api.iterview.service.member.MemberService;
-import server.api.iterview.service.transcribe.TranscriptionService;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.HEADER;
 
@@ -27,15 +25,15 @@ import static io.swagger.v3.oas.annotations.enums.ParameterIn.HEADER;
 public class TranscriptionController {
 
     private final MemberService memberService;
-    private final TranscriptionService transcriptionService;
     private final AnswerService answerService;
 
-    @ApiOperation(value = "영상에서 텍스트 추출", notes = "AWS Transcribe API를 이용하여 영상에서 텍스트 추출 작업 실행")
+    @ApiOperation(value = "영상에서 텍스트 추출", notes = "AWS Transcribe API를 이용하여 영상에서 텍스트 추출 작업 실행, 그리고 Open-AI API 요청을 통해 점수, 피드백, 모범답안까지 요청")
     @ApiResponses({
-            @io.swagger.annotations.ApiResponse(code = 20401, message = "transcribe 성공 (200)"),
+            @io.swagger.annotations.ApiResponse(code = 20402, message = "Speech Text 추출 진행 시작"),
             @io.swagger.annotations.ApiResponse(code = 40501, message = "해당 유저에 대한 답변 데이타가 없음 (404)"),
             @io.swagger.annotations.ApiResponse(code = 40401, message = "transcribe 실패 (500)"),
             @io.swagger.annotations.ApiResponse(code = 40402, message = "이미 텍스트 추출된 영상입니다 (200)"),
+            @io.swagger.annotations.ApiResponse(code = 40403, message = "텍스트 추출이 아직 진행 중입니다. (200)"),
     })
     @GetMapping("/transcription")
     public ApiResponse<Object> createTranscription(
@@ -47,12 +45,16 @@ public class TranscriptionController {
 
         if(answer.getTranscriptStatus() == TranscriptStatus.Y){
             return ApiResponse.of(TranscribeResponseType.ALREADY_TRANSCRIBED);
+        }else if(answer.getTranscriptStatus() == TranscriptStatus.ING){
+            return ApiResponse.of(TranscribeResponseType.ING_TRANSCRIBE);
         }
 
-        TranscriptionResponseDTO transcriptionResponse = transcriptionService.extractSpeechTextFromVideo(member, questionId);
-        answerService.saveTranscription(transcriptionResponse, answer);
+        answerService.updateTranscriptStatusToING(answer);
+        // 해당 함수 비동기
+        // STT 추출 후 Open-AI API 요청까지.
+        answerService.extractTextAndSaveAndRequestOpenAI(member, questionId, answer);
 
-        return ApiResponse.of(TranscribeResponseType.TRANSCRIBE_OK, transcriptionResponse);
+        return ApiResponse.of(TranscribeResponseType.TRANSCRIBE_ING);
     }
 
 

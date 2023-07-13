@@ -133,6 +133,7 @@ public class QuestionService {
                 questionDto.setEntireBookmarkedCount(bookmarkRepository.countByQuestionAndStatus(question, BookmarkStatus.Y));
                 questionDto.setBookmarked((bookmark == null) ? BookmarkStatus.N : bookmark.getStatus());
                 questionDto.setAnswered((answer == null) ? AnsweredStatus.N : AnsweredStatus.Y);
+                questionDto.setLastAnsweredDate((answer == null) ? null : answer.getModifiedDate().toString());
                 questionDtos.add(questionDto);
             }
         }else{
@@ -143,6 +144,8 @@ public class QuestionService {
                 questionDtos.add(questionDto);
             }
         }
+
+
 
         return questionDtos;
     }
@@ -206,7 +209,9 @@ public class QuestionService {
     @Transactional
     public List<QuestionDto> getMyAnsweredAllQuestion(Member member) {
 
-        return getQuestionDtosFromQuestions(questionRepository.getMyAnsweredQuestions(member), member);
+        List<QuestionDto> questionDtosFromQuestions = getQuestionDtosFromQuestions(questionRepository.getMyAnsweredQuestions(member), member);
+        questionDtosFromQuestions.sort((e1, e2) -> e2.getLastAnsweredDate().compareTo(e1.getLastAnsweredDate()));
+        return questionDtosFromQuestions;
     }
 
     @Transactional
@@ -224,7 +229,9 @@ public class QuestionService {
             return new ArrayList<>();
         }
 
-        return getQuestionDtosFromQuestions(questions, member);
+        List<QuestionDto> questionDtosFromQuestions = getQuestionDtosFromQuestions(questions, member);
+        questionDtosFromQuestions.sort((e1, e2) -> e2.getLastAnsweredDate().compareTo(e1.getLastAnsweredDate()));
+        return questionDtosFromQuestions;
     }
 
     @Transactional

@@ -1,9 +1,6 @@
 package server.api.iterview.domain.answer;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import server.api.iterview.domain.BaseTimeEntity;
 import server.api.iterview.domain.member.Member;
 import server.api.iterview.domain.question.Question;
@@ -18,6 +15,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
@@ -30,7 +28,7 @@ public class Answer extends BaseTimeEntity {
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "QUESTION_ID")
     private Question question;
 
@@ -38,6 +36,13 @@ public class Answer extends BaseTimeEntity {
     private List<Transcription> transcriptions;
 
     private String content;
+    private Integer score;
+
+    @Column(length = 1000)
+    private String feedback;
+
+    @Column(length = 1000)
+    private String bestAnswer;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
@@ -47,11 +52,13 @@ public class Answer extends BaseTimeEntity {
         super.setModifiedDate(LocalDateTime.now());
     }
 
-    public void setContent(String content){
-        this.content = content;
+    public void deleteContents(){
+        super.setModifiedDate(LocalDateTime.now());
+        this.transcriptStatus = TranscriptStatus.N;
+        this.content = null;
+        this.bestAnswer = null;
+        this.feedback = null;
+        this.score = 0;
     }
 
-    public void setTranscriptStatus(TranscriptStatus status){
-        this.transcriptStatus = status;
-    }
 }

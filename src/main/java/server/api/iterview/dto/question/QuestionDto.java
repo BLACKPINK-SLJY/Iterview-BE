@@ -25,6 +25,7 @@ public class QuestionDto {
     private BookmarkStatus bookmarked;
     private Long entireBookmarkedCount;
     private AnsweredStatus answered;
+    private String lastAnsweredDate;
 
     public static QuestionDto of(Question question){
 //        Optional<String> tagString =  question.getTags().stream().map(Tag::getName).reduce((x, y) -> x + ", " + y);

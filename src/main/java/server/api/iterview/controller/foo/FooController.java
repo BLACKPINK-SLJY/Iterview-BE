@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import server.api.iterview.dto.foo.FooDto;
+import server.api.iterview.dto.gpt.GptEvaluationResponseDto;
 import server.api.iterview.dto.transcription.*;
 import server.api.iterview.response.BizException;
 import server.api.iterview.response.ApiResponse;
 import server.api.iterview.response.foo.FooResponseType;
 import server.api.iterview.service.foo.FooService;
+import server.api.iterview.service.gpt.GptService;
 
 
 import java.util.ArrayList;
@@ -23,13 +25,14 @@ import java.util.List;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.*;
 
-@Api(tags = "Foo")
+@Api(tags = "테스트용")
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/v1")
 public class FooController {
     private final FooService fooService;
+    private final GptService gptService;
     
     @ApiOperation(value = "요청 예시", notes = "요청 예시입니다!\nname에 \"error\" : controller에서 error 처리하는 경우\ntitle에 \"error\" : service에서 error 처리하는 경우")
     @ApiResponses({
@@ -102,4 +105,19 @@ public class FooController {
         return responseDTO;
     }
 
+    @GetMapping("/async")
+    public String asyncTest(){
+        fooService.testAsync();
+        return "async 성공";
+    }
+
+    @GetMapping("/gpt")
+    public ApiResponse<GptEvaluationResponseDto> gpt(){
+        return ApiResponse.of(FooResponseType.FOO_CREATE_SUCCESS, gptService.evaluateTest(null));
+    }
+
+    @GetMapping("/aop")
+    public String aopTest(){
+        return "aop 성공";
+    }
 }
