@@ -21,6 +21,7 @@ import server.api.iterview.repository.BookmarkRepository;
 import server.api.iterview.repository.TranscriptionRepository;
 import server.api.iterview.response.BizException;
 import server.api.iterview.response.answer.AnswerResponseType;
+import server.api.iterview.service.gpt.GptService;
 import server.api.iterview.service.transcribe.TranscriptionService;
 
 import java.time.LocalDateTime;
@@ -31,7 +32,6 @@ import java.util.stream.Collectors;
 
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class AnswerService {
@@ -39,6 +39,7 @@ public class AnswerService {
     private final TranscriptionRepository transcriptionRepository;
     private final BookmarkRepository bookmarkRepository;
     private final TranscriptionService transcriptionService;
+    private final GptService gptService;
 
     @Transactional(readOnly = true)
     public Answer findAnswerByMemberAndQuestionId(Member member, Long questionId){
@@ -46,6 +47,7 @@ public class AnswerService {
                 .orElseThrow(() -> new BizException(AnswerResponseType.NO_ANSWER_RESULT));
     }
 
+    @Transactional
     public void syncDB(Member member, Question question) {
         Answer answer = answerRepository.findByMemberAndQuestion(member, question)
                 .orElse(null);
@@ -61,16 +63,6 @@ public class AnswerService {
         answer.updateModifiedDate();
         answer.setTranscriptStatus(TranscriptStatus.N);
         answer.setContent(null);
-    }
-
-    public void saveTranscriptionOnAnswer(TranscriptionResultDTO results, Answer answer){
-        String transcription = "";
-        for(TranscriptionTextDTO transcriptionTextDto : results.getTranscripts()){
-            transcription = transcription.concat(transcriptionTextDto.getTranscript());
-        }
-
-        answer.setContent(transcription);
-        answerRepository.save(answer);
     }
 
     public void saveTranscriptionFragments(List<TranscriptionItemDTO> items, Answer answer){
@@ -152,15 +144,20 @@ public class AnswerService {
         }
     }
 
-    public void saveTranscription(TranscriptionResponseDTO transcriptionResponse, Answer answer) {
+    public Answer saveTranscription(TranscriptionResponseDTO transcriptionResponse, Answer answer) {
         transcriptionRepository.deleteAll(transcriptionRepository.findByAnswer(answer));
 
         TranscriptionResultDTO results = transcriptionResponse.getResults();
-        saveTranscriptionOnAnswer(results, answer);
+
+        String transcription = "";
+        for(TranscriptionTextDTO transcriptionTextDto : results.getTranscripts()){
+            transcription = transcription.concat(transcriptionTextDto.getTranscript());
+        }
+
+        answer.setContent(transcription);
         saveFragmentsBySentence(results.getItems(), answer);
 
-        answer.setTranscriptStatus(TranscriptStatus.Y);
-        answerRepository.save(answer);
+        return answerRepository.save(answer);
     }
 
     @Transactional(readOnly = true)
@@ -188,27 +185,37 @@ public class AnswerService {
     /**
      * S3에 저장된 비디오를 가지고 STT 작업 수행.
      * 응답 받은 데이터를 데이터베이스에 저장.
-     * STT 작업이 오래 걸리기 때문에 비동기 처리
+     * 데이터베이스에 추출된 텍스트가 저장되었으면 다시 Open-AI에 요청
+     * STT 작업과 Open-AI API요청이 오래 걸리기 때문에 비동기 처리
      */
     @Async
-    public void extractTextAndSave(Member member, Long questionId, Answer answer) {
-        // Transcribe 돌리고 있다는 뜻으로 ING로 변경
-        answer.setTranscriptStatus(TranscriptStatus.ING);
-        answerRepository.save(answer);
-
+    public void extractTextAndSaveAndRequestOpenAI(Member member, Long questionId, Answer answer) {
         try {
             TranscriptionResponseDTO responseDTO = transcriptionService.extractSpeechTextFromVideo(member, questionId);
-            saveTranscription(responseDTO, answer);
+            Answer newAnswer = saveTranscription(responseDTO, answer);
+
+            // 저장 되었으니 GPT에 평가 요청
+            gptService.evaluateByGPT(newAnswer);
         }catch (Exception e){
-            // 텍스트 추출 작업 중 에러가 발생하였을 경우 Transcription Status를 N으로 저장
+            // 텍스트 추출 or GPT 평가 작업 중 에러가 발생하였을 경우 Transcription Status를 N으로 저장
             answer.setTranscriptStatus(TranscriptStatus.N);
             answerRepository.save(answer);
         }
     }
 
     /**
+     * Transcription Status를 ING로 변경
+     * Transaction 때문에 분리
+     */
+    @Transactional
+    public void updateTranscriptStatusToING(Answer answer){
+        answer.setTranscriptStatus(TranscriptStatus.ING);
+    }
+
+    /**
      * 내 녹화 영상 보러가기
      */
+    @Transactional(readOnly = true)
     public AnswerVideoResponseDto getReplayAnswerResponse(Member member, Question question, Answer answer, String preSignedUrl) {
         Bookmark bookmark = bookmarkRepository.findByMemberAndQuestion(member, question)
                 .orElse(null);
@@ -230,6 +237,7 @@ public class AnswerService {
                 .build();
     }
 
+    @Transactional
     public TranscriptionResultDTO getTranscriptionResult(Answer answer){
         List<TranscriptionTextDTO> transcripts = List.of(new TranscriptionTextDTO(answer.getContent()));
 

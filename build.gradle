@@ -26,6 +26,7 @@ dependencies {
 	implementation 'io.springfox:springfox-boot-starter:3.0.0'
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.420'
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	implementation 'com.amazonaws:aws-java-sdk-transcribe:1.12.334'
 	implementation 'software.amazon.awssdk:kinesis'
 	implementation platform('software.amazon.awssdk:bom:2.15.0')
