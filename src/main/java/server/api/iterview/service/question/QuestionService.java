@@ -23,6 +23,7 @@ import server.api.iterview.response.question.QuestionResponseType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -236,8 +237,9 @@ public class QuestionService {
 
     @Transactional
     public List<QuestionDto> getMyBookmarkedAllQuestion(Member member) {
-
-        return getQuestionDtosFromQuestions(questionRepository.getMyBookmarkedQuestions(member, BookmarkStatus.Y), member);
+        List<QuestionDto> questionDtosFromQuestions = getQuestionDtosFromQuestions(questionRepository.getMyBookmarkedQuestions(member, BookmarkStatus.Y), member);
+        Collections.reverse(questionDtosFromQuestions);
+        return questionDtosFromQuestions;
     }
 
     @Transactional
@@ -254,8 +256,9 @@ public class QuestionService {
         if(questions.isEmpty()){
             return new ArrayList<>();
         }
-
-        return getQuestionDtosFromQuestions(questions, member);
+        List<QuestionDto> questionDtosFromQuestions = getQuestionDtosFromQuestions(questions, member);
+        Collections.reverse(questionDtosFromQuestions);
+        return questionDtosFromQuestions;
     }
 
     public List<QuestionDto> getRandomQuestions(String categoryString, Member member) {
