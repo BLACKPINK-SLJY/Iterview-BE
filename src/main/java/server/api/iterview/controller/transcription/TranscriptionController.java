@@ -16,6 +16,7 @@ import server.api.iterview.response.InternalServerExceptionType;
 import server.api.iterview.response.transcribe.TranscribeResponseType;
 import server.api.iterview.service.answer.AnswerService;
 import server.api.iterview.service.member.MemberService;
+import server.api.iterview.vo.DummyResponseDataVO;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.HEADER;
 
@@ -67,7 +68,7 @@ public class TranscriptionController {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            Object jsonObject = objectMapper.readValue(dummyString, Object.class);
+            Object jsonObject = objectMapper.readValue(DummyResponseDataVO.TRANSCRIPTION_DUMMY, Object.class);
             return ApiResponse.of(TranscribeResponseType.TRANSCRIBE_OK, jsonObject);
         }catch (Exception e){
             throw new BizException(InternalServerExceptionType.INTERNAL_SERVER_ERROR);
@@ -75,63 +76,4 @@ public class TranscriptionController {
 
     }
 
-    String dummyString = "{\n" +
-            "    \"category\": \"IOS\",\n" +
-            "    \"date\": \"2023.06.27 화요일\",\n" +
-            "    \"url\": \"https://iterview-bucket.s3.ap-northeast-2.amazonaws.com/9fb02c54-29a5-437e-aaf0-25f7f2ae1b58/5?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20230626T170430Z&X-Amz-SignedHeaders=host&X-Amz-Expires=599&X-Amz-Credential=AKIA4MFRH54OCAMCQVXR%2F20230626%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Signature=c7090a333f7ccdab2f81f91aa01674fa4d35d039befa429705af550e78a40df7\",\n" +
-            "    \"length\": null,\n" +
-            "    \"results\": {\n" +
-            "      \"transcripts\": [\n" +
-            "        {\n" +
-            "          \"transcript\": \"자세히 보아야 예쁘다. 오래 보아야 사랑스럽다. 너도 그렇다. 스프링은 잡아언어를 기반으로 한다.\"\n" +
-            "        }\n" +
-            "      ],\n" +
-            "      \"items\": [\n" +
-            "        {\n" +
-            "          \"start_time\": \"0.4\",\n" +
-            "          \"end_time\": \"1.68\",\n" +
-            "          \"alternatives\": [\n" +
-            "            {\n" +
-            "              \"confidence\": null,\n" +
-            "              \"content\": \"자세히 보아야 예쁘다.\"\n" +
-            "            }\n" +
-            "          ],\n" +
-            "          \"type\": null\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"start_time\": \"2.12\",\n" +
-            "          \"end_time\": \"3.61\",\n" +
-            "          \"alternatives\": [\n" +
-            "            {\n" +
-            "              \"confidence\": null,\n" +
-            "              \"content\": \"오래 보아야 사랑스럽다.\"\n" +
-            "            }\n" +
-            "          ],\n" +
-            "          \"type\": null\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"start_time\": \"4.03\",\n" +
-            "          \"end_time\": \"4.97\",\n" +
-            "          \"alternatives\": [\n" +
-            "            {\n" +
-            "              \"confidence\": null,\n" +
-            "              \"content\": \"너도 그렇다.\"\n" +
-            "            }\n" +
-            "          ],\n" +
-            "          \"type\": null\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"start_time\": \"5.37\",\n" +
-            "          \"end_time\": \"7.75\",\n" +
-            "          \"alternatives\": [\n" +
-            "            {\n" +
-            "              \"confidence\": null,\n" +
-            "              \"content\": \"스프링은 잡아언어를 기반으로 한다.\"\n" +
-            "            }\n" +
-            "          ],\n" +
-            "          \"type\": null\n" +
-            "        }\n" +
-            "      ]\n" +
-            "    }\n" +
-            "  }";
 }
