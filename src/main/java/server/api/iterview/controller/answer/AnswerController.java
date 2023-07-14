@@ -1,5 +1,6 @@
 package server.api.iterview.controller.answer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
@@ -16,12 +17,16 @@ import server.api.iterview.dto.amazonS3.PresignedUrlResponseDto;
 import server.api.iterview.dto.answer.AnswerReportResponseDto;
 import server.api.iterview.dto.answer.AnswerVideoResponseDto;
 import server.api.iterview.response.ApiResponse;
+import server.api.iterview.response.BizException;
+import server.api.iterview.response.InternalServerExceptionType;
 import server.api.iterview.response.amazonS3.AmazonS3ResponseType;
 import server.api.iterview.response.answer.AnswerResponseType;
+import server.api.iterview.response.transcribe.TranscribeResponseType;
 import server.api.iterview.service.answer.AnswerService;
 import server.api.iterview.service.member.MemberService;
 import server.api.iterview.service.question.QuestionService;
 import server.api.iterview.service.s3.AmazonS3Service;
+import server.api.iterview.vo.DummyResponseDataVO;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.HEADER;
 
@@ -116,5 +121,40 @@ public class AnswerController {
         AnswerVideoResponseDto response = answerService.getReplayAnswerResponse(member, question, answer, preSignedUrl);
 
         return ApiResponse.of(AnswerResponseType.MY_ANSWER_SUCCESS, response);
+    }
+
+    @ApiOperation(value = "내 답변 보기 - 녹화 영상 보러가기 dumdum~dummy~~", notes = "")
+    @ApiResponses({
+            @io.swagger.annotations.ApiResponse(code = 20502, message = "내 답변 보기 응답 성공 (200)"),
+    })
+    @GetMapping("/answer/replay/dummy")
+    public ApiResponse<Object> replayAnswerDummy(
+    ){
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            Object jsonObject = objectMapper.readValue(DummyResponseDataVO.ANSWER_REPLAY_DUMMY, Object.class);
+            return ApiResponse.of(AnswerResponseType.MY_ANSWER_SUCCESS, jsonObject);
+        }catch (Exception e){
+            throw new BizException(InternalServerExceptionType.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @ApiOperation(value = "내 답변 보기 - dummmmmy더미더미더미", notes = "내 답변 보기에서 필요한 모든 정보")
+    @ApiResponses({
+            @io.swagger.annotations.ApiResponse(code = 20502, message = "내 답변 보기 응답 성공 (200)"),
+            @io.swagger.annotations.ApiResponse(code = 40301, message = "presigned-url 발급에 실패하였습니다. (500)"),
+    })
+    @GetMapping("/answer/dummy")
+    public ApiResponse<Object> getMyAnswerDummy(
+    ){
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            Object jsonObject = objectMapper.readValue(DummyResponseDataVO.ANSWER_DUMMY, Object.class);
+            return ApiResponse.of(AnswerResponseType.MY_ANSWER_SUCCESS, jsonObject);
+        }catch (Exception e){
+            throw new BizException(InternalServerExceptionType.INTERNAL_SERVER_ERROR);
+        }
     }
 }
