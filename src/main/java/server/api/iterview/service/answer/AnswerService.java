@@ -97,7 +97,7 @@ public class AnswerService {
             StringBuilder content = new StringBuilder();
             for(TranscriptionItemAlternativesDTO alternativesDTO : item.getAlternatives()){
                 Double confidence = Double.parseDouble(alternativesDTO.getConfidence());
-                if(confidence <= 0.80 && !alternativesDTO.getContent().equals(".") && !alternativesDTO.getContent().equals(",")){
+                if(confidence <= 0.75 && !alternativesDTO.getContent().equals(".") && !alternativesDTO.getContent().equals(",")){
                     wrong = true;
                 }
 
