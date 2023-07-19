@@ -30,6 +30,7 @@ public class JwtProvider {
     private Key secretKey;
 
     // 1일
+    @Value("${jwt.access-token-expire-time}")
     private Long exp = 86400L * 1000;
 
     private final JpaUserDetailsService userDetailsService;
