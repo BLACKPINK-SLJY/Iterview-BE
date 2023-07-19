@@ -2,6 +2,7 @@ package server.api.iterview.service.member;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,9 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final TokenRepository tokenRepository;
     private final JwtProvider jwtProvider;
+
+    @Value("${jwt.refresh-token-expire-time}")
+    private Integer refreshExp;
 
     @Transactional
     public SignResponse login(SignRequest request) {
@@ -101,7 +105,7 @@ public class MemberService {
                 Token.builder()
                         .id(member.getId())
                         .refresh_token(UUID.randomUUID().toString())
-                        .expiration(120)
+                        .expiration(refreshExp)
                         .build()
         );
         return token.getRefresh_token();
