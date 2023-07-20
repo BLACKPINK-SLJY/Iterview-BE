@@ -20,4 +20,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<MemberInfoDto> getMemberInfoDtoByAccount(@Param("account") String account);
 
     Boolean existsMemberByAccount(String account);
+    Optional<Member> findByRefreshToken(String token);
 }

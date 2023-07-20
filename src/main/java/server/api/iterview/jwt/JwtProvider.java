@@ -31,7 +31,7 @@ public class JwtProvider {
 
     // 1일
     @Value("${jwt.access-token-expire-time}")
-    private Long exp = 86400L * 1000;
+    private Long exp;
 
     private final JpaUserDetailsService userDetailsService;
 
