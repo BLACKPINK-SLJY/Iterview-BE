@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import server.api.iterview.dto.jwt.RefreshTokenDto;
 import server.api.iterview.dto.jwt.TokenDto;
 import server.api.iterview.dto.member.MemberInfoDto;
 import server.api.iterview.dto.member.SignRequest;
@@ -74,8 +75,8 @@ public class MemberController {
             @io.swagger.annotations.ApiResponse(code = 40101, message = "사용자를 찾을 수 없습니다. (404)"),
     })
     @PostMapping("/refresh")
-    public ApiResponse<TokenDto> refresh(@RequestBody TokenDto token) {
-        TokenDto tokenDto = memberService.refreshAccessToken(token);
+    public ApiResponse<TokenDto> refresh(@RequestBody RefreshTokenDto refreshTokenDto) {
+        TokenDto tokenDto = memberService.refreshAccessToken(refreshTokenDto);
 
         return ApiResponse.of(JwtResponseType.TOKEN_REISSUED, tokenDto);
     }

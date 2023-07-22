@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import server.api.iterview.domain.member.Member;
 import server.api.iterview.domain.jwt.Token;
 import server.api.iterview.domain.member.Authority;
+import server.api.iterview.dto.jwt.RefreshTokenDto;
 import server.api.iterview.dto.jwt.TokenDto;
 import server.api.iterview.dto.member.MemberInfoDto;
 import server.api.iterview.dto.member.SignRequest;
@@ -21,6 +22,7 @@ import server.api.iterview.response.BizException;
 import server.api.iterview.response.jwt.JwtResponseType;
 import server.api.iterview.response.member.MemberResponseType;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -35,7 +37,7 @@ public class MemberService {
     private final JwtProvider jwtProvider;
 
     @Value("${jwt.refresh-token-expire-time}")
-    private Integer refreshExp;
+    private Long refreshExp;
 
     @Transactional
     public SignResponse login(SignRequest request) {
@@ -85,10 +87,9 @@ public class MemberService {
 
     @Transactional
     public Member getMember(String account) {
-        Member member = memberRepository.findByAccount(account)
-                .orElseThrow(() -> new BizException(MemberResponseType.NOT_FOUND_USER));
 
-        return member;
+        return memberRepository.findByAccount(account)
+                .orElseThrow(() -> new BizException(MemberResponseType.NOT_FOUND_USER));
     }
 
     // Refresh Token ================
@@ -105,7 +106,7 @@ public class MemberService {
                 Token.builder()
                         .id(member.getId())
                         .refresh_token(UUID.randomUUID().toString())
-                        .expiration(refreshExp)
+                        .expiration(LocalDateTime.now().plusSeconds(refreshExp))
                         .build()
         );
         return token.getRefresh_token();
@@ -116,15 +117,19 @@ public class MemberService {
         Token token = tokenRepository.findById(member.getId())
                 .orElseThrow(() -> new BizException(JwtResponseType.REFRESH_TOKEN_EXPIRED));
 
+        if(LocalDateTime.now().isAfter(token.getExpiration())){
+            throw new BizException(JwtResponseType.REFRESH_TOKEN_EXPIRED);
+        }
+
         // 해당유저의 Refresh 토큰 만료 : Redis에 해당 유저의 토큰이 존재하지 않음
         if (token.getRefresh_token() == null) {
             return null;
         } else {
             // 리프레시 토큰 만료일자가 얼마 남지 않았을 때 만료시간 연장..?
-            if(token.getExpiration() < 10) {
-                token.setExpiration(1000);
-                tokenRepository.save(token);
-            }
+//            if(token.getExpiration() < 10) {
+//                token.setExpiration(1000);
+//                tokenRepository.save(token);
+//            }
 
             // 토큰이 같은지 비교
             if(!token.getRefresh_token().equals(refreshToken)) {
@@ -136,15 +141,19 @@ public class MemberService {
     }
 
     @Transactional
-    public TokenDto refreshAccessToken(TokenDto token){
-        String account = jwtProvider.getAccount(token.getAccess_token());
-        Member member = memberRepository.findByAccount(account).orElseThrow(() ->
-                new BadCredentialsException("잘못된 계정정보입니다."));
-        Token refreshToken = validRefreshToken(member, token.getRefresh_token());
+    public TokenDto refreshAccessToken(RefreshTokenDto refreshTokenDto){
+//        String account = jwtProvider.getAccount(token.getAccess_token());
+//        Member member = memberRepository.findByAccount(account).orElseThrow(() ->
+//                new BadCredentialsException("잘못된 계정정보입니다."));
+        Member member = memberRepository.findByRefreshToken(refreshTokenDto.getRefresh_token())
+                .orElseThrow(() -> new BadCredentialsException("잘못된 계정정보입니다."));
+
+        Token refreshToken = validRefreshToken(member, refreshTokenDto.getRefresh_token());
 
         if (refreshToken != null) {
+            refreshToken.refreshExpiration(refreshExp);
             return TokenDto.builder()
-                    .access_token(jwtProvider.createToken(account, member.getRoles()))
+                    .access_token(jwtProvider.createToken(member.getAccount(), member.getRoles()))
                     .refresh_token(refreshToken.getRefresh_token())
                     .build();
         } else {
@@ -154,10 +163,9 @@ public class MemberService {
 
     @Transactional
     public MemberInfoDto getMemberInfo(String account) {
-        MemberInfoDto memberInfoDto = memberRepository.getMemberInfoDtoByAccount(account)
-                .orElseThrow(() -> new BizException(MemberResponseType.NOT_FOUND_USER));
 
-        return memberInfoDto;
+        return memberRepository.getMemberInfoDtoByAccount(account)
+                .orElseThrow(() -> new BizException(MemberResponseType.NOT_FOUND_USER));
     }
 
     @Transactional
