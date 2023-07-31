@@ -35,13 +35,14 @@ public class Answer extends BaseTimeEntity {
     @OneToMany(mappedBy = "answer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transcription> transcriptions;
 
+    @Column(length = 2000)
     private String content;
     private Integer score;
 
-    @Column(length = 1000)
+    @Column(length = 2000)
     private String feedback;
 
-    @Column(length = 1000)
+    @Column(length = 2000)
     private String bestAnswer;
 
     @Enumerated(EnumType.STRING)
