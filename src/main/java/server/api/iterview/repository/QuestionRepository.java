@@ -47,13 +47,15 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     @Query("select q from Question q " +
             "inner join Bookmark b " +
             "on q.id = b.question.id " +
-            "where b.member = :member and b.status = :status")
+            "where b.member = :member and b.status = :status " +
+            "order by b.modifiedTime")
     List<Question> getMyBookmarkedQuestions(@Param("member") Member member, @Param("status")BookmarkStatus status);
 
     @Query("select q from Question q " +
             "inner join Bookmark b " +
             "on q.id = b.question.id " +
-            "where b.member = :member and b.status = :status and q.category = :category")
+            "where b.member = :member and b.status = :status and q.category = :category " +
+            "order by b.modifiedTime")
     List<Question> getMyBookmarkedQuestionsByCategory(@Param("member") Member member, @Param("status") BookmarkStatus status, @Param("category") Category category);
 
     @Query(nativeQuery = true, value = "select * from question q where category = :category order by RAND() limit 10")

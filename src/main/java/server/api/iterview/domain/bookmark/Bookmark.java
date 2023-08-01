@@ -8,6 +8,7 @@ import server.api.iterview.domain.member.Member;
 import server.api.iterview.domain.question.Question;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -30,7 +31,11 @@ public class Bookmark {
     @Builder.Default
     private BookmarkStatus status = BookmarkStatus.N;
 
+    @Builder.Default
+    private LocalDateTime modifiedTime = LocalDateTime.now();
+
     public void setStatus(BookmarkStatus status){
         this.status = status;
+        this.modifiedTime = LocalDateTime.now();
     }
 }
